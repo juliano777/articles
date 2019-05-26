@@ -54,6 +54,7 @@ Functions vs Stored Procedures
 
 Function
 
+- Can RETURN a value;
 - 
 
 
