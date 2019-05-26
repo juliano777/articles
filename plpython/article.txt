@@ -34,8 +34,4 @@ About PostgreSQL
 - Extensible;
 - Multi paradigm: relational and NoSQL features;
 
-
-
-
-
 www.postgresql.org
