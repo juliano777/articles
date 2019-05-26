@@ -10,7 +10,8 @@ About Python
 - Fully object oriented;
 - Easy to learn;
 - Easy maintenance;
-- Wide variety of libraries;
+- Batteries included (Standard libraries);
+- Wide variety of third party libraries;
 
 
 Rica em bibliotecas;
