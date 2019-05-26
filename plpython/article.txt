@@ -42,7 +42,7 @@ www.postgresql.org
 
 Functions and Stored Procedures in PostgreSQL
 
-- Implements operations that not be easy or even possible with pure SQL;
+- Implements operations that are not be easy or not possible with pure SQL;
 
 Implementa operações que não seriam fáceis ou sequer seriam possíveis com SQL;
 
