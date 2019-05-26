@@ -123,6 +123,19 @@ SELECT my_field FROM tb_foo;
 Overloading
 
 
+Function creation with two arguments:
+
+CREATE OR REPLACE FUNCTION fc_foo (my_value_1 INT, my_value_2 INT)
+RETURNS INT AS $body$
+
+BEGIN
+    -- A simple calculation...
+    RETURN my_value_1 + my_value_2;
+END;
+
+$body$ LANGUAGE PLPGSQL;
+
+
 
 
 
