@@ -17,7 +17,7 @@ About Python
 - Strong and friendly community;
 - Objective and very productive: do more writing less! :)
 
-import this
+> import this [https://www.python.org/dev/peps/pep-0020/]
 
 
 www.python.org
