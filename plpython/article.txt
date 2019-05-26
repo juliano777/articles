@@ -52,5 +52,12 @@ Functions and Stored Procedures in PostgreSQL
 
 Functions vs Stored Procedures
 
+Function
+
+
+Stored Procedure
+
+Can run Transactions
+
 
 
