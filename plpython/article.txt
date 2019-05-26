@@ -55,12 +55,12 @@ Functions vs Stored Procedures
 Function
 
 - Can RETURN a value;
-- 
+- Executed by a simple SELECT statement;
 
 
 Stored Procedure
 
 - Can run Transactions
-
+- Executed by a CALL statement;
 
 
