@@ -1,3 +1,6 @@
+PostgreSQL: PL/Python - Writing Functions and Stored Procedures in Python 
+
+
 About this article
 
 	This is a alternative version of "On snakes and elephants Using Python inside PostgreSQL" by Jan Urbański.
@@ -39,4 +42,8 @@ www.postgresql.org
 
 Functions and Stored Procedures in PostgreSQL
 
+Implementa operações que não seriam fáceis ou sequer seriam possíveis com SQL;
 
+Uma função é chamada dentro de SQL;
+
+Pode encapsular lógica de negócio;
