@@ -32,10 +32,10 @@ About PostgreSQL
 - Rich in advanced features;
 - Very friendly for developers;
 - Extensible;
+- Multi paradigm: relational and NoSQL features;
 
 
-Muito amigável para programadores;
-Extensível
+
 
 
 www.postgresql.org
