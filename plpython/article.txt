@@ -88,6 +88,18 @@ $body$ LANGUAGE PLPGSQL;
 
 
 
+Stored procedure creation:
+
+CREATE OR REPLACE PROCEDURE sp_foo (my_value INT) AS $body$
+
+BEGIN
+    INSERT INTO tb_foo (my_field) SELECT fc_foo(my_value);
+END;
+
+$body$ LANGUAGE PLPGSQL;
+
+
+
 
 
 
