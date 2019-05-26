@@ -1,0 +1,7 @@
+About this article
+
+	This is a alternative version of "On snakes and elephants Using Python inside PostgreSQL" by Jan Urbański.
+
+	https://wulczer.org/pywaw-summit.pdf
+
+
