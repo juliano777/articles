@@ -108,7 +108,7 @@ CALL sp_foo(7);
 
 Check the result:
 
-SELECT                                                                                                                                                                       
+SELECT                                                                                                                                                                        
 +------------+
 | my_field   |
 |------------|
