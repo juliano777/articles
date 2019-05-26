@@ -21,3 +21,21 @@ About Python
 
 
 www.python.org
+
+
+About PostgreSQL
+
+	PostgreSQL is a Object Relational Database Management System, originally developed at the University of California, Department of Computer Science in Berkeley.
+	It's currently developed and maintained by the PGDG (PostgreSQL Global Development Group).
+
+- Open source;
+- Rich in advanced features;
+- Very friendly for developers;
+- Extensible;
+
+
+Muito amigável para programadores;
+Extensível
+
+
+www.postgresql.org
