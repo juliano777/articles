@@ -12,10 +12,10 @@ About Python
 - Easy maintenance;
 - Batteries included (Standard libraries / modules);
 - Wide variety of third party libraries / modules;
+- General purpose, e. g.; Script, Web, Desktop, Embbeded;
+- Strong Typing;
 
 
-Rica em bibliotecas;
-Propósitos gerais;
 Tipagem forte e dinânica;
 Comunidade forte e solícita;
 Objetiva e muito produtiva: faça mais escrevendo menos.
