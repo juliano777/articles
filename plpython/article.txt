@@ -42,6 +42,8 @@ www.postgresql.org
 
 Functions and Stored Procedures in PostgreSQL
 
+- Implements operations that not be easy or even possible with pure SQL;
+
 Implementa operações que não seriam fáceis ou sequer seriam possíveis com SQL;
 
 Uma função é chamada dentro de SQL;
