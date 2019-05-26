@@ -60,7 +60,7 @@ Function
 
 Stored Procedure
 
-- Can run Transactions
+- Can run Transactions (COMMIT / ROLLBACK);
 - Executed by a CALL statement;
 
 
