@@ -47,11 +47,7 @@ Functions and Stored Procedures in PostgreSQL
 - A function or a stored procedure is called inside SQL;
 - It can encapsulate logic business;
 - PL/Python, PL/Perl and PL/Tcl are nativelly supported, but is possible to use other procedural languages such as PL/Java, PL/PHP, PL/v8 (JavaScript), PL/R and etc;
-
-
-
-Suporta sobrecarga de função
-
+- Support for function overload.
 
 
 
