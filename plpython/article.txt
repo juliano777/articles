@@ -42,7 +42,7 @@ www.postgresql.org
 
 Functions and Stored Procedures in PostgreSQL
 
-- In PostgreSQL the default is PL/pgSQL, that is very similar to Oracle's PL/SQL;
+- In PostgreSQL the default procedural language is PL/pgSQL, that is very similar to Oracle's PL/SQL;
 - Implements operations that are not be easy or not possible with pure SQL;
 - A function or a stored procedure is called inside SQL;
 - It can encapsulate logic business.
