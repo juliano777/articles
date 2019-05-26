@@ -116,6 +116,12 @@ SELECT my_field FROM tb_foo;
 | 21         |
 +------------+
 
+	We can notice the result after combining a function and a stored procedure (just for example).
+
+
+
+
+
 
 
 
