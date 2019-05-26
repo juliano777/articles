@@ -4,4 +4,22 @@ About this article
 
 	https://wulczer.org/pywaw-summit.pdf
 
+About Python
 
+- Very high level programming language;
+- Fully object oriented;
+- Easy to learn;
+- Easy maintenance;
+- Wide variety of libraries;
+
+
+Rica em bibliotecas;
+Propósitos gerais;
+Tipagem forte e dinânica;
+Comunidade forte e solícita;
+Objetiva e muito produtiva: faça mais escrevendo menos.
+
+import this
+
+
+www.python.org
