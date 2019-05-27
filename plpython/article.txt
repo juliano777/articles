@@ -137,6 +137,18 @@ $body$ LANGUAGE PLPGSQL;
 
 
 
+Stored procedure creation with two arguments:
+
+CREATE OR REPLACE PROCEDURE sp_foo (my_value_1 INT, my_value_2 INT) AS $body$
+
+BEGIN
+    INSERT INTO tb_foo (my_field) SELECT fc_foo(my_value_1, my_value_2);
+END;
+
+$body$ LANGUAGE PLPGSQL;
+
+
+
 
 
 
