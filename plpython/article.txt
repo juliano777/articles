@@ -76,7 +76,7 @@ CREATE TABLE tb_foo (my_field int);
 
 Function creation:
 
-CREATE OR REPLACE FUNCTION fc_foo (my_value INT)
+CREATE OR REPLACE FUNCTION fc_foo(my_value INT)
 RETURNS INT AS $body$
 
 BEGIN
@@ -90,7 +90,7 @@ $body$ LANGUAGE PLPGSQL;
 
 Stored procedure creation:
 
-CREATE OR REPLACE PROCEDURE sp_foo (my_value INT) AS $body$
+CREATE OR REPLACE PROCEDURE sp_foo(my_value INT) AS $body$
 
 BEGIN
     INSERT INTO tb_foo (my_field) SELECT fc_foo(my_value);
@@ -125,7 +125,7 @@ Overloading
 
 Function creation with two arguments:
 
-CREATE OR REPLACE FUNCTION fc_foo (my_value_1 INT, my_value_2 INT)
+CREATE OR REPLACE FUNCTION fc_foo(my_value_1 INT, my_value_2 INT)
 RETURNS INT AS $body$
 
 BEGIN
@@ -139,7 +139,7 @@ $body$ LANGUAGE PLPGSQL;
 
 Stored procedure creation with two arguments:
 
-CREATE OR REPLACE PROCEDURE sp_foo (my_value_1 INT, my_value_2 INT) AS $body$
+CREATE OR REPLACE PROCEDURE sp_foo(my_value_1 INT, my_value_2 INT) AS $body$
 
 BEGIN
     INSERT INTO tb_foo (my_field) SELECT fc_foo(my_value_1, my_value_2);
