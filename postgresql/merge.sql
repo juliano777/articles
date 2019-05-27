@@ -10,7 +10,7 @@ CREATE TABLE tb_source (id serial PRIMARY KEY, sid int4, delta int4);
 INSERT INTO tb_target (id, balance)
     VALUES (1, 0), (2, 10), (3, -5);
 
-INSERT INTO tb_source (id, delta)
+INSERT INTO tb_source (sid, delta)
     VALUES (1, 10), (2, 0), (3, 15), (4, 70), (1, 5);
 
 
