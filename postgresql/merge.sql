@@ -51,7 +51,7 @@ MERGE INTO tb_target AS t
         UPDATE SET balance = t.balance - s.delta
     WHEN MATCHED THEN DELETE
     WHEN NOT MATCHED AND s.delta > 0 THEN
-       INSERT VALUES (s.id, s.delta)
+       INSERT VALUES (s.sid, s.delta)
     WHEN NOT MATCHED THEN DO NOTHING;
 
 SELECT * FROM tb_source WHERE sid = 1;
