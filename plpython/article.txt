@@ -226,6 +226,20 @@ The plpy module provides access to database and functions;
 The path of modules depends on environment variable PYTHONPATH of user that starts the PostgreSQL service.
 
 
+PL/Python Data Types
+
+
+PostgreSQL -> Python
+
+bigint, integer, smallint -> int
+real, double -> float
+numeric -> Decimal
+boolean -> bool
+text, varchar, char -> str
+array -> list
+custom types -> dict
+null -> None
+
 
 
 
