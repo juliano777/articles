@@ -149,6 +149,12 @@ $body$ LANGUAGE PLPGSQL;
 
 
 
+Call the procedure:
+
+CALL sp_foo(5, 2);
+
+
+
 
 
 
