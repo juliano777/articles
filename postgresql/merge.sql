@@ -17,6 +17,29 @@ INSERT INTO tb_source (sid, delta)
 
 /* Check the content of the tables */;
 
+TABLE tb_target;
+
+/*
+ tid | balance 
+-----+---------
+   1 |       0
+   2 |      10
+   3 |      -5
+*/
+
+
+TABLE tb_source;
+
+/*
+ id | sid | delta 
+----+-----+-------
+  1 |   1 |    10
+  2 |   2 |     0
+  3 |   3 |    15
+  4 |   4 |    70
+  5 |   1 |     5
+*/
+
 
 
 /* Merge data */;
