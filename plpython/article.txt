@@ -155,6 +155,21 @@ CALL sp_foo(5, 2);
 
 
 
+Check the result:
+
+SELECT my_field FROM tb_foo;
+
++------------+
+| my_field   |
+|------------|
+| 21         |
+| 7          |
++------------+
+
+	We can notice the result after combining a function and a stored procedure (just for example).
+
+
+
 
 
 
