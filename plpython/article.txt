@@ -251,6 +251,10 @@ PL/Python allows actions outside of the database;
 
 Only superusers can create functions in untrusted languages like PL/PythonU.
 
+"With great power comes great responsibility" 
+
+Uncle Ben (Stan Lee)
+
 
 
 
