@@ -15,10 +15,15 @@ INSERT INTO tb_source (sid, delta)
 
 
 
+/* Check the content of the tables */;
+
+
+
 /* Merge data */;
 
-MERGE INTO tb_target AS t USING tb_source AS s
-    ON t.tid = s.sid
+MERGE INTO tb_target AS t
+    USING tb_source AS s
+        ON t.tid = s.sid
     WHEN MATCHED AND t.balance > s.delta THEN
         UPDATE SET balance = t.balance - s.delta
     WHEN MATCHED THEN DELETE
