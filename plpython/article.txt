@@ -259,7 +259,16 @@ Ben Parker / Uncle Ben (Stan Lee)
 
 PL/Python vs PL/pgSQL
 
+Which is the best procedural language for PostgreSQL?
 
+PL/Python or PL/pgSQL?
+
+It depends...
+
+De forma geral podemos dizer que para operações puras na base de dados é melhor utilizar PL/pgSQL. 
+E PL/Python para operações que vão além do banco, dando um maior poder de fogo para o PostgreSQL.
+
+Cada uma tem seu valor e sua aplicabilidade dentro de um contexto :)
 
 
 
