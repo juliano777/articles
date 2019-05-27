@@ -46,7 +46,7 @@ TABLE tb_source;
 
 MERGE INTO tb_target AS t
     USING tb_source AS s
-        ON t.id = s.id
+        ON t.id = s.sid
     WHEN MATCHED AND t.balance > s.delta THEN
         UPDATE SET balance = t.balance - s.delta
     WHEN MATCHED THEN DELETE
