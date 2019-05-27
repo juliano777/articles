@@ -265,13 +265,11 @@ PL/Python or PL/pgSQL?
 
 It depends...
 
+For database only operations is better to use PL/PgSQL.
 
-For 
+And PL/Python for for operations that goes beyond the database, giving a greater firepower to PostgreSQL.
 
-Para operações puras na base de dados é melhor utilizar PL/pgSQL. 
-E PL/Python para operações que vão além do banco, dando um maior poder de fogo para o PostgreSQL.
-
-Cada uma tem seu valor e sua aplicabilidade dentro de um contexto :)
+Each one have its value and its applicability within a context :)
 
 
 
