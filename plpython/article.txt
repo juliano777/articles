@@ -273,6 +273,10 @@ Each one have its value and its applicability within a context :)
 
 
 
+Special Variable for Triggers
+
+
+
 
 
 
