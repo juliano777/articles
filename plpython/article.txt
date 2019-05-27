@@ -243,7 +243,18 @@ null -> None
 
 PL/PythonU: What Means this "U"?
 
+PL/Python is a procedural language that is considered as "Untrusted";
 
+
+
+
+PL/Python é uma linguagem procedural considerada “untrusted” (não confiável): o que implica na denominação PL/PYTHONU;
+
+O que significa que não é oferecida qualquer forma de restrição para usuários fazer;
+
+Permite executar ações fora do banco de dados;
+
+Somente superusers podem criar funções em linguagens como PL/PYTHONU.
 
 
 
