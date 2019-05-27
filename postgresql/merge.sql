@@ -59,7 +59,7 @@ SELECT * FROM tb_source WHERE sid = 1;
 DELETE FROM tb_source WHERE id = 5;
 
 MERGE INTO tb_target AS t USING tb_source AS s
-   ON t.tid = s.sid
+   ON t.id = s.id
    WHEN MATCHED AND t.balance > s.delta THEN
        UPDATE SET balance = t.balance - s.delta
    WHEN MATCHED THEN DELETE
