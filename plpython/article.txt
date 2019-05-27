@@ -197,7 +197,8 @@ BEGIN
         'non-local connections: %', n_con;
 END; $$ LANGUAGE PLPGSQL;
 
-NOTICE:  Conexões não-locais: 10
+NOTICE:  non-local connections: 1
+
 
 
 
