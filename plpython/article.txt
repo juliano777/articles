@@ -219,18 +219,11 @@ To avoid an intial delay we can configure to load the plpython.so system library
 
 PostgreSQL data types are converted to Python data types and vice-versa;
 
+The arguments of a function or stored procedure have global scope;
 
+The plpy module provides access to database and functions;
 
-
-
-
-Tipos de dados PostgreSQL são convertidos para os de Python e vice-versa;
-
-Os  argumentos de uma função têm escopo global;
-
-O módulo plpy fornece acesso ao banco e funções;
-
-O “path” dos módulos depende da variável de ambiente PYTHONPATH do usuário que inicia o serviço do PostgreSQL.
+The path of modules depends on environment variable PYTHONPATH of user that starts the PostgreSQL service.
 
 
 
