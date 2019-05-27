@@ -166,7 +166,7 @@ SELECT my_field FROM tb_foo;
 | 7          |
 +------------+
 
-	Now, we just see the result after create a new function and a new stored procedure with the same name, but using different arguments configuration. Technically, are new objects despite their its names.
+	Now, we just see the result after create a new function and a new stored procedure with the same name, but using different arguments configuration. Technically, are new objects despite its names.
 
 
 
