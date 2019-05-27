@@ -253,7 +253,7 @@ Only superusers can create functions in untrusted languages like PL/PythonU.
 
 "With great power comes great responsibility" 
 
-Uncle Ben (Stan Lee)
+Ben Parker / Uncle Ben (Stan Lee)
 
 
 
