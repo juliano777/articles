@@ -54,7 +54,15 @@ MERGE INTO tb_target AS t
        INSERT VALUES (s.sid, s.delta)
     WHEN NOT MATCHED THEN DO NOTHING;
 
+
+
+/* sddçsçdlsçdlsldç */
+
 SELECT * FROM tb_source WHERE sid = 1;
+
+
+
+/* fdçdlfçdflç */
 
 DELETE FROM tb_source WHERE id = 5;
 
