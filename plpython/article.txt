@@ -184,6 +184,23 @@ $$ LANGUAGE procedural_language;
 
 
 
+SET client_min_messages = 'notice';
+
+DO $$
+DECLARE n_con INT;
+BEGIN
+    SELECT count(client_addr)
+        INTO n_con
+        FROM pg_stat_activity;
+
+    RAISE NOTICE
+        'non-local connections: %', n_con;
+END; $$ LANGUAGE PLPGSQL;
+
+NOTICE:  Conexões não-locais: 10
+
+
+
 
 
 
