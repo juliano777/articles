@@ -66,6 +66,9 @@ SELECT * FROM tb_source WHERE sid = 1;
 
 DELETE FROM tb_source WHERE id = 5;
 
+
+/* pdsdoosdposdpop */
+
 MERGE INTO tb_target AS t USING tb_source AS s
    ON t.id = s.sid
    WHEN MATCHED AND t.balance > s.delta THEN
