@@ -245,15 +245,11 @@ PL/PythonU: What Means this "U"?
 
 PL/Python is a procedural language that is considered as "Untrusted";
 
+Which means that no form of restriction is offered for users to do;
 
+PL/Python allows actions outside of the database;
 
-
-O que significa que não é oferecida qualquer forma de restrição para usuários fazer;
-
-Permite executar ações fora do banco de dados;
-
-Somente superusers podem criar funções em linguagens como PL/PYTHONU.
-
+Only superusers can create functions in untrusted languages like PL/PythonU.
 
 
 
