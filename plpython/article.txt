@@ -204,7 +204,17 @@ NOTICE:  non-local connections: 1
 
 PL/Python
 
+PL/Python is the Python implementation as procedural language in PostgreSQL;
 
+Allows us to use all the Python libraries installed in the operating system;
+
+
+Permite utilizar todas as bibliotecas de Python instaladas no sistema operacional;
+
+Ao rodar PL/Python pela primeira vez após o servidor PostgreSQL inicializar, um interpretador Python é inicializado dentro do processo backend;
+
+
+https://www.postgresql.org/docs/current/static/plpython.html
 
 
 
