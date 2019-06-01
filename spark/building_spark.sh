@@ -14,14 +14,19 @@ yum install -y python-setuptools R-Rcpp R-Rcpp-devel git
 
 
 
+# R Script for install packages:
+
+cat << EOF > /tmp/pkg.R
+my_pkgs <- c('knitr', 'shiny', 'miniUI', 'htmltools', 'htmlwidgets');
+my_repos <- c('http://rforge.net', 'http://cran.rstudio.org', 'http://R-Forge.R-project.org');
+install.packages(my_pkgs, repos=my_repos, type='source', dependencies=TRUE);
+EOF
+
+
+
 # Install R packages:
 
-Rscript -e "
-install.packages(c('knitr', 'shiny', 'miniUI', 'htmltools', 'htmlwidgets'), \
-repos=c('http://rforge.net', 'http://cran.rstudio.org', 'http://R-Forge.R-project.org'), \
-type='source', dependencies=TRUE);
-"
-
+Rscript /tmp/pkg.R
 
 
 # You must provide the version to download:
