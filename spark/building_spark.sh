@@ -18,7 +18,7 @@ yum install -y python-setuptools R-Rcpp git
 
 Rscript -e "
 install.packages(c('knitr', 'shiny', 'miniUI', 'htmltools', 'htmlwidgets'), \
-repos=c('http://rforge.net', 'http://cran.rstudio.org'), \
+repos=c('http://rforge.net', 'http://cran.rstudio.org', 'http://R-Forge.R-project.org'), \
 type='source', dependencies=TRUE);
 "
 
