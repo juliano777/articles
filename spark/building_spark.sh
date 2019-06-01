@@ -22,7 +22,8 @@ my_pkgs <- c(
              'shiny',
              'miniUI',
              'htmltools',
-             'htmlwidgets'
+             'htmlwidgets',
+             'pandoc'
             );
 
 my_repos <- c(
