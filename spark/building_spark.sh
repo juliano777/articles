@@ -16,7 +16,10 @@ yum install -y python-setuptools R-Rcpp git
 
 # Install R packages:
 
-Rscript -e "install.packages('knitr', repos=c('http://rforge.net', 'http://cran.rstudio.org'), type='source', dependencies=TRUE)"
+Rscript -e "
+pkgs <- c('knitr', 'shiny', 'miniUI', 'htmltools', 'htmlwidgets');
+install.packages(pkgs, repos=c('http://rforge.net', 'http://cran.rstudio.org'), type='source', dependencies=TRUE)
+"
 
 
 
@@ -51,7 +54,7 @@ rm -f bin/*.cmd
 
 
 
-# You’ll need to configure Maven to use more memory than usual by setting MAVEN_OPTS:
+# You'll need to configure Maven to use more memory than usual by setting MAVEN_OPTS:
 
 export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
 
