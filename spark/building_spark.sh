@@ -62,10 +62,11 @@ export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
     -Phive \
     -Phive-thriftserver \
     -Pkubernetes \
-    -Pkafka \
+    -Pkafka-0.10 \
     -Pflume \
-    -Phadoop-provide \
-    -Pscala
+    -Phadoop-provided \
+    -Pscala-${SCALA_VERSION}
+
 
 
 
