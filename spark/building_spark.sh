@@ -77,7 +77,11 @@ export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
 
 Rscript -e "update.packages(ask = FALSE, checkBuilt = TRUE, repos = 'https://cloud.r-project.org')"
 
-Rscript -e "install.packages('knitr', dependencies = TRUE)"
+Rscript -e "install.packages('knitr', repos=c('http://rforge.net', 'http://cran.rstudio.org'), type='source', dependencies=TRUE)"
+
+
+
+install.packages('knitr', )"
 
 
 
