@@ -8,7 +8,13 @@ Requirements
 
 
 
-# First of all, you must provide the version to download:
+# Install packages:
+
+yum install -y python-setuptools R-Rcpp git
+
+
+
+# You must provide the version to download:
 
 read -p 'What is the Spark version? (X.Y.Z): ' SPARK_VERSION
 
