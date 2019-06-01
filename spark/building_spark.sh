@@ -10,7 +10,7 @@ Requirements
 
 # Install packages:
 
-yum install -y python-setuptools R-Rcpp R-Rcpp-devel git
+yum install -y python-setuptools R-Rcpp R-Rcpp-devel git pandoc-citeproc
 
 
 
