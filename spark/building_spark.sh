@@ -75,6 +75,13 @@ export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
 
 
 
+Rscript -e "update.packages(ask = FALSE, checkBuilt = TRUE, repos = 'https://cloud.r-project.org')"
+
+
+
+
+
+
 
 
 
