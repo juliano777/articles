@@ -26,7 +26,8 @@ my_pkgs <- c(
              'rmarkdown',
              'devtools',
              'e1071',
-             'survival'
+             'survival',
+             'roxygen2
             );
 
 my_repos <- c(
