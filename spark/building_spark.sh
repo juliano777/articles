@@ -10,7 +10,7 @@ Requirements
 
 # Install packages:
 
-yum install -y python-setuptools R-Rcpp R-Rcpp-devel git pandoc-citeproc
+yum install -y python-setuptools R-Rcpp R-Rcpp-devel git
 
 
 
@@ -23,13 +23,18 @@ my_pkgs <- c(
              'miniUI',
              'htmltools',
              'htmlwidgets',
-             'pandoc'
+             'pandoc',
+             'rmarkdown',
+             'devtools',
+             'e1071',
+             'survival'
             );
 
 my_repos <- c(
               'http://rforge.net',
               'http://cran.rstudio.org',
-              'http://R-Forge.R-project.org'
+              'http://R-Forge.R-project.org',
+              'http://cran.us.r-project.org'
              );
 
 install.packages(my_pkgs, repos=my_repos, type='source', dependencies=TRUE);
