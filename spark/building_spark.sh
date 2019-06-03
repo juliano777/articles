@@ -23,7 +23,6 @@ my_pkgs <- c(
              'miniUI',
              'htmltools',
              'htmlwidgets',
-             'pandoc',
              'rmarkdown',
              'devtools',
              'e1071',
