@@ -27,7 +27,7 @@ my_pkgs <- c(
              'devtools',
              'e1071',
              'survival',
-             'roxygen2
+             'roxygen2'
             );
 
 my_repos <- c(
