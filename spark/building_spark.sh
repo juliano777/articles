@@ -19,6 +19,12 @@ yum install -y python-setuptools R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
 wget -O- https://bootstrap.pypa.io/get-pip.py | python
 
 
+
+# Install Python packages:
+
+pip install pypandoc
+
+
 # R Script for install packages:
 
 cat << EOF > /tmp/pkg.R
