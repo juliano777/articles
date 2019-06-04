@@ -96,8 +96,8 @@ export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
 ./dev/make-distribution.sh \
     --name my_spark \
     --pip \
-    --r \
     --tgz \
+    --r \
     -Psparkr \
     -Phive \
     -Phive-thriftserver \
