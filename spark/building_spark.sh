@@ -14,6 +14,11 @@ yum install -y python-setuptools R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
 
 
 
+# Install PIP:
+
+wget -O- https://bootstrap.pypa.io/get-pip.py | python
+
+
 # R Script for install packages:
 
 cat << EOF > /tmp/pkg.R
