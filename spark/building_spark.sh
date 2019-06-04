@@ -22,7 +22,7 @@ wget -O- https://bootstrap.pypa.io/get-pip.py | python
 
 # Install Python packages:
 
-pip install pypandoc
+pip install pypandoc setuptools
 
 
 # R Script for install packages:
