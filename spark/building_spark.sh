@@ -92,7 +92,13 @@ rm -f bin/*.cmd
 
 # You'll need to configure Maven to use more memory than usual by setting MAVEN_OPTS:
 
-export MAVEN_OPTS="-Xmx2g -XX:ReservedCodeCacheSize=512m"
+export MAVEN_OPTS='-Xmx2g -XX:ReservedCodeCacheSize=512m'
+
+
+
+# Set the environment variable LANG:
+
+export LANG='en_US.UTF-8'
 
 
 
