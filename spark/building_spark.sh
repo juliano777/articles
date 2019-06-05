@@ -133,7 +133,8 @@ fi
     -Pkubernetes \
     -Pkafka \
     -Pflume \
-    -Pscala-${SCALA_VERSION}
+    -Pscala-${SCALA_VERSION} \
+    -T 1C
 
 
 
