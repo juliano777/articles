@@ -86,7 +86,7 @@ cd /tmp/ && tar xf spark-${SPARK_VERSION}.tgz && cd spark-${SPARK_VERSION}
 
 # Clean unnecessary files:
 
-rm -f bin/*.cmd
+rm -vf bin/*.cmd
 
 
 
@@ -108,7 +108,19 @@ export LANG='en_US.UTF-8'
 
 
 
-# 
+# If you have the last (stable) version of Maven installed...
+
+export MVN=`which mvn 2> /dev/null`
+
+if [ ! -z ${MVN} ]; then  # If the environment variable is not empty
+    # New value for the MVN variable inside the script
+    sed "s|\(^MVN=.*\)|#\1\nMVN='${MVN}'|g" -i dev/make-distribution.sh
+fi
+
+
+
+
+# Start the compilation to make your own distribution of Spark:
 
 ./dev/make-distribution.sh \
     --name my_spark \
@@ -119,7 +131,7 @@ export LANG='en_US.UTF-8'
     -Phive \
     -Phive-thriftserver \
     -Pkubernetes \
-    -Pkafka-0.10 \
+    -Pkafka \
     -Pflume \
     -Pscala-${SCALA_VERSION}
 
