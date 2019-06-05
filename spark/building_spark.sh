@@ -132,7 +132,7 @@ fi
     -Pkafka \
     -Pflume \
     -Pscala-${SCALA_VERSION} \
-    -Phadoop-provided \
+    -Phadoop \
     -T 1C
 
 
