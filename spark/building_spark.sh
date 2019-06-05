@@ -137,25 +137,25 @@ fi
 
 
 
-# dssdsd:
+# Rename dist directory:
 
 mv dist/ spark-${SPARK_VERSION}
 
 
 
-# 
+# Tar package creation (without compression):
 
-tar cvf spark-${SPARK_VERSION}-k8s-without_hadoop.tar spark-${SPARK_VERSION}
-
-
-
-# 
-
-xz -9 spark-${SPARK_VERSION}-k8s-without_hadoop.tar
+tar cvf spark-${SPARK_VERSION}-k8s.tar spark-${SPARK_VERSION}
 
 
 
-# 
+# Compress the Tar file with XZ maximum compression:
+
+xz -9 spark-${SPARK_VERSION}-k8s.tar
+
+
+
+# Remove the old directory:
 
 rm -fr spark-${SPARK_VERSION}
 
