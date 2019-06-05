@@ -123,9 +123,7 @@ fi
 # Start the compilation to make your own distribution of Spark:
 
 ./dev/make-distribution.sh \
-    --name my_spark \
     --pip \
-    --tgz \
     --r \
     -Psparkr \
     -Phive \
@@ -134,7 +132,38 @@ fi
     -Pkafka \
     -Pflume \
     -Pscala-${SCALA_VERSION} \
+    -Phadoop-provided \
     -T 1C
+
+
+
+# dssdsd:
+
+mv dist/ spark-${SPARK_VERSION}
+
+
+
+# 
+
+tar cvf spark-${SPARK_VERSION}-k8s-without_hadoop.tar spark-${SPARK_VERSION}
+
+
+
+# 
+
+xz -9 spark-${SPARK_VERSION}-k8s-without_hadoop.tar
+
+
+
+# 
+
+rm -fr spark-${SPARK_VERSION}
+
+
+
+
+
+
 
 
 
