@@ -39,6 +39,18 @@ tar xf R-${R_VERSION}.tar.gz && cd R-${R_VERSION}/
     --with-readline \
     --with-blas \
     --with-x=no
+
+
+#
+
+make && make install
+
+
+
+
+# sdsdsds
+
+
     
 
     
