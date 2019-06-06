@@ -29,5 +29,14 @@ tar xf R-${R_VERSION}.tar.gz && cd R-${R_VERSION}/
 
 # Configure:
 
-./configure --prefix=/opt/R/3.2.3 --enable-R-shlib
+./configure \
+    --prefix /usr/local/r \
+    --includedir /usr/local/include \
+    --mandir /usr/local/man \
+    --enable-R-shlib \
+    --enable-lto \
+    --enable-byte-compiled-packages \
+    --with-readline 
+
+    
 
