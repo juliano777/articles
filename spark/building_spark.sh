@@ -10,7 +10,7 @@ Requirements
 
 # Install packages:
 
-yum install -y python-setuptools R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
+yum install -y R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
 
 
 
