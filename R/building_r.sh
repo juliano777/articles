@@ -1,6 +1,6 @@
-# Install packages to build Python:
+# Install packages to build R:
 
-aptitude install -y libffi-dev
+aptitude install -y libffi-dev gfortran-6
 
 yum install -y libffi-devel
 
