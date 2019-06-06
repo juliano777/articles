@@ -1,7 +1,6 @@
 # Install packages to build R:
 
-apt install -y gfortran-6
-
+apt install -y gfortran
 yum install -y libffi-devel
 
 
