@@ -1,6 +1,6 @@
 # Install packages to build R:
 
-apt install -y gfortran libreadline-dev zlib1g-dev
+apt install -y gcc make gfortran libreadline-dev zlib1g-dev libbz2-dev liblzma-dev libpcre-ocaml-dev libcurl-ocaml-dev
 
 yum install -y libffi-devel
 
