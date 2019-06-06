@@ -37,7 +37,6 @@ tar xf R-${R_VERSION}.tar.gz && cd R-${R_VERSION}/
     --enable-lto \
     --enable-byte-compiled-packages \
     --with-readline \
-    --with-system-tre \
     --with-x=no
     
 
