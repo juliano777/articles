@@ -41,7 +41,8 @@ MAKEOPTS="-j${NJOBS}"
 
 ./configure \
     --prefix /usr/local/python \
-    --includedir /usr/local/include
+    --includedir /usr/local/include \
+    --enable-optimizations
 
 
 
