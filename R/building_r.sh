@@ -35,7 +35,9 @@ tar xf R-${R_VERSION}.tar.gz && cd R-${R_VERSION}/
     --enable-R-shlib \
     --enable-lto \
     --enable-byte-compiled-packages \
-    --with-readline 
+    --with-readline \
+    --with-x no
+    
 
     
 
