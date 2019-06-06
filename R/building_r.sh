@@ -50,6 +50,12 @@ make && make install
 
 # sdsdsds
 
+cat << EOF > /etc/profile.d/r.sh
+#!/bin/bash
+
+export PATH="/usr/local/r/bin:\${PATH}"
+EOF
+
 
     
 
