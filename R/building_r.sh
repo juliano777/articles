@@ -8,7 +8,7 @@ yum install -y libffi-devel
 
 # Python Version environment:
 
-read -p 'What is the Python version (X.Y.Z) to download? ' PYTHON_VERSION
+read -p 'What is the R version (X.Y.Z) to download? ' PYTHON_VERSION
 
 
 
