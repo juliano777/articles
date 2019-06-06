@@ -16,6 +16,6 @@ read -p 'What is the R version (X.Y.Z) to download? ' R_VERSION
 
 cd /tmp
 
-wget -c https://www.python.org/ftp/python/${PYTHON_VERSION}/\
-Python-${PYTHON_VERSION}.tar.xz
+wget -c https://cloud.r-project.org/src/base/R-${R_VERSION:0:1}/\
+R-${R_VERSION}.tar.gz
 
