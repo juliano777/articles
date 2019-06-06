@@ -12,6 +12,8 @@ Requirements
 
 yum install -y R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
 
+apt instal -y r-base
+
 
 
 # Install PIP:
