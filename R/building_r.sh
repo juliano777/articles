@@ -21,5 +21,13 @@ R-${R_VERSION}.tar.gz
 
 
 
-# 
+# Unpack the file and enter into directory:
+
+tar xf R-${R_VERSION}.tar.gz && cd R-${R_VERSION}/
+
+
+
+# Configure:
+
+./configure --prefix=/opt/R/3.2.3 --enable-R-shlib
 
