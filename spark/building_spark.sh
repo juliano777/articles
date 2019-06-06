@@ -12,7 +12,7 @@ Requirements
 
 yum install -y R-Rcpp R-Rcpp-devel git mesa-libGLU-devel
 
-apt instal -y r-base
+apt install -y r-base
 
 
 
