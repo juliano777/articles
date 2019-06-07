@@ -1,6 +1,6 @@
 # Install packages to build Python:
 
-aptitude install -y libffi-dev
+apt install -y libffi-dev libffi6 libncurses5
 
 yum install -y libffi-devel
 
