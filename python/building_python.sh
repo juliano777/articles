@@ -45,8 +45,7 @@ export MAKEOPTS="-j${NJOBS}"
     --prefix /usr/local/python \
     --includedir /usr/local/include \
     --enable-optimizations \
-    --with-lto \
-    --
+    --with-lto
 
 
 
