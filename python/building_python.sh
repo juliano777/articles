@@ -29,13 +29,13 @@ tar xf Python-${PYTHON_VERSION}.tar.xz && cd Python-${PYTHON_VERSION}/
 
 # Número de jobs conforme a quantidade cores de CPU (cores + 1):
 
-NJOBS=`expr \`cat /proc/cpuinfo | egrep ^processor | wc -l\` + 1`
+export NJOBS=`expr \`cat /proc/cpuinfo | egrep ^processor | wc -l\` + 1`
 
 
 
 # Make Options:
 
-MAKEOPTS="-j${NJOBS}"
+export MAKEOPTS="-j${NJOBS}"
 
 
 
