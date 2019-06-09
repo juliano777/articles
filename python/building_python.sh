@@ -57,7 +57,7 @@ make && make altinstall
 
 # Profile file:
 
-cat << EOF > /etc/profile.d/python.sh
+cat << EOF > /etc/profile.d/python.sh && source /etc/profile.d/python.sh
 #!/bin/bash
 
 export PATH="/usr/local/python/bin:\${PATH}"
