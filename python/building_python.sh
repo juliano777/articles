@@ -1,6 +1,6 @@
 # Install packages to build Python:
 
-apt install -y libffi-dev libffi6 libncurses5 {zlib1g,libssl,libncurses,uuid}-dev wget gcc g++ make
+apt install -y libffi6 libncurses5 {zlib1g,libssl,libncurses,libffi,uuid}-dev wget gcc g++ make
 
 yum install -y libffi-devel
 
