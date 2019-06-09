@@ -65,6 +65,12 @@ EOF
 
 
 
+# Install the last version of PIP:
+
+wget -O- https://bootstrap.pypa.io/get-pip.py | python3.7
+
+
+
 # Make a tar package:
 
 tar cvf /tmp/Python-bin-${PYTHON_VERSION}.tar \
