@@ -11,9 +11,15 @@ yum install -y libffi-devel
 
 
 
-# Python Version environment:
+# Python Version environment (XYZ):
 
-read -p 'What is the Python version (X.Y.Z) to download? ' PYTHON_VERSION
+read -p 'What is the Python version (X.Y.Z) to download? ' PY_VERSION_XYZ
+
+
+
+# Python Version environment (XY):
+
+export PY_VERSION_XY=`echo ${PY_VERSION_XYZ} | awk -F '.' '{print $1 "." $2}'`
 
 
 
@@ -21,14 +27,14 @@ read -p 'What is the Python version (X.Y.Z) to download? ' PYTHON_VERSION
 
 cd /tmp
 
-wget -c https://www.python.org/ftp/python/${PYTHON_VERSION}/\
-Python-${PYTHON_VERSION}.tar.xz
+wget -c https://www.python.org/ftp/python/${PY_VERSION_XYZ}/\
+Python-${PY_VERSION_XYZ}.tar.xz
 
 
 
 # Unpack the file and enter into directory:
 
-tar xf Python-${PYTHON_VERSION}.tar.xz && cd Python-${PYTHON_VERSION}/
+tar xf Python-${PY_VERSION_XYZ}.tar.xz && cd Python-${PY_VERSION_XYZ}/
 
 
 
@@ -78,7 +84,7 @@ wget -O- https://bootstrap.pypa.io/get-pip.py | python3.7
 
 # Make a tar package:
 
-tar cvf /tmp/Python-bin-${PYTHON_VERSION}.tar \
+tar cvf /tmp/Python-bin-${PY_VERSION_XYZ}.tar \
 /etc/profile.d/python.sh \
 /usr/local/{python,include}
 
@@ -86,7 +92,7 @@ tar cvf /tmp/Python-bin-${PYTHON_VERSION}.tar \
 
 # Compact with XZ:
 
-xz -9 /tmp/Python-bin-${PYTHON_VERSION}.tar
+xz -9 /tmp/Python-bin-${PY_VERSION_XYZ}.tar
 
 
 
