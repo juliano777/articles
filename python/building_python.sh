@@ -5,6 +5,8 @@ apt update && apt install -y \
     {libbz2,zlib1g,libssl,libncurses,libffi,uuid,tk}-dev \
     wget gcc g++ make xz-utils
 
+apt clean
+
 yum install -y libffi-devel
 
 
