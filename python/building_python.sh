@@ -59,6 +59,7 @@ export MAKEOPTS="-j${NJOBS}"
     --with-lto \
     --enable-loadable-sqlite-extensions \
     --enable-ipv6 \
+    --with-ssl-default-suites=python
     
 
 
