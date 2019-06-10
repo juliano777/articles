@@ -1,7 +1,7 @@
 # Install packages to build Python:
 
 apt update && apt install -y \
-    lib{ffi6,curses5} \
+    lib{ffi6,ncurses5} \
     {libbz2,zlib1g,libssl,libncurses,libffi,uuid,tk}-dev \
     wget gcc g++ make xz-utils
 
