@@ -2,7 +2,7 @@
 
 apt-get update && apt-get install -y \
     lib{ffi6,ncurses5} \
-    {libbz2,zlib1g,libssl,libncurses,libffi,uuid,tk}-dev \
+    {libbz2,zlib1g,libssl,libncurses,libffi,uuid,tk,libsqlite3}-dev \
     wget gcc g++ make xz-utils
 
 apt clean
@@ -57,7 +57,10 @@ export MAKEOPTS="-j${NJOBS}"
     --includedir /usr/local/include \
     --enable-optimizations \
     --with-lto \
-    --enable-loadable-sqlite-extensions
+    --enable-loadable-sqlite-extensions \
+    --enable-ipv6 \
+    
+
 
 
 
