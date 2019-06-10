@@ -3,7 +3,7 @@
 apt-get update && apt-get install -y \
     lib{ffi6,ncurses5} \
     {libbz2,zlib1g,libssl,libncurses,libffi,uuid,tk,libsqlite3}-dev \
-    wget gcc g++ make xz-utils libssl1.1
+    wget gcc g++ make xz-utils
 
 apt clean
 
