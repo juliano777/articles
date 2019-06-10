@@ -78,7 +78,7 @@ EOF
 
 # Install the last version of PIP:
 
-wget -O- https://bootstrap.pypa.io/get-pip.py | python3.7
+wget -O- https://bootstrap.pypa.io/get-pip.py | python${PY_VERSION_XY}
 
 
 
