@@ -7,7 +7,7 @@ apt-get update && apt-get install -y \
 
 apt clean
 
-yum install -y libffi-devel
+yum install -y libffi ncurses {bzip2,zlib,openssl,ncurses,libffi,libuuid,tk,libsqlite3x}-devel wget gcc g++ make xz
 
 
 
