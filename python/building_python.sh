@@ -9,6 +9,8 @@ apt clean
 
 yum install -y libffi ncurses {bzip2,zlib,openssl,ncurses,libffi,libuuid,tk,libsqlite3x}-devel wget gcc g++ make xz
 
+yum clean all
+
 
 
 # Python Version environment (XYZ):
