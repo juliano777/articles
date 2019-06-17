@@ -128,7 +128,6 @@ fi
     --pip \
     --r \
     -Psparkr \
-    -Phadoop-3.2 \
     -Phive \
     -Phive-thriftserver \
     -Pkubernetes \
