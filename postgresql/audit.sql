@@ -13,8 +13,9 @@ CREATE TABLE tb_user_audit(
     name VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
     active boolean,
-    modif_ts TIMESTAMP WITH TIME ZONE,
-    operation CHAR(1));
+    modif_ts TIMESTAMP WITH TIME ZONE,  -- Modification date
+    operation CHAR(1))
+    PARTITION BY RANGE (modif_ts);
 
 I
 U
