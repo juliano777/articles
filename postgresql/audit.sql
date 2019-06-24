@@ -95,7 +95,11 @@ CREATE OR REPLACE FUNCTION fc_create_partition_range(
 RETURNS TEXT AS $body$
 
 /* 
+Function - fc_create_partition_range
 
+This function creates a range of partitions given a a year of start and year
+of end.
+ 
 
 */;
 
