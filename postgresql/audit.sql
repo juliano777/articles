@@ -8,7 +8,7 @@ CREATE DATABASE db_audit;
 
 CREATE TABLE tb_user(
     id serial PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
     active boolean DEFAULT TRUE);
 
@@ -25,7 +25,7 @@ CREATE SCHEMA sc_audit;
 
 CREATE TABLE sc_audit.tb_user_audit(
     id int,
-    name VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
     active boolean NOT NULL,
     modif_ts TIMESTAMP WITH TIME ZONE NOT NULL,  -- Modification date
@@ -145,9 +145,20 @@ DECLARE
     v_old_data TEXT;
     v_new_data TEXT;
 
-    op char(1) := left(TG_OP, 1);
+    
 
 BEGIN
+    IF (left(TG_OP, 1) IN ('I', 'U', 'D')) THEN
+        INSERT INTO sc_audit.tb_user_audit (id, username VARCHAR(50) NOT NULL,
+    password VARCHAR(12) NOT NULL,
+    active boolean NOT NULL,
+    modif_ts TIMESTAMP WITH TIME ZONE NOT NULL,  -- Modification date
+    modif_user VARCHAR(50) NOT NULL,  -- User who made the change
+    op
+
+    END IF;
+
+
     /*  If this actually for real auditing (where you need to log EVERY action),
         then you would need to use something like dblink or plperl that could log outside the transaction,
         regardless of whether the transaction committed or rolled back.
