@@ -138,7 +138,9 @@ END;$body$ LANGUAGE PLPGSQL;
 -- fc_tg_audit_user ---------------------------------------------------------;
 
 
-CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user() RETURNS TRIGGER AS $body$
+CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user()
+RETURNS TRIGGER AS $body$
+
 DECLARE
     v_old_data TEXT;
     v_new_data TEXT;
