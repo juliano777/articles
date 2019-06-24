@@ -7,8 +7,7 @@ CREATE DATABASE db_audit;
 -- Original table of users
 
 CREATE TABLE tb_user(
-    id serial PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) PRIMARY KEY,
     password VARCHAR(12) NOT NULL,
     active boolean DEFAULT TRUE);
 
@@ -24,7 +23,6 @@ CREATE SCHEMA sc_audit;
 -- Audit table of users (partitioned);
 
 CREATE TABLE sc_audit.tb_user_audit(
-    id int,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
     active boolean NOT NULL,
@@ -154,7 +152,7 @@ DECLARE
 BEGIN
     IF (op IN ('I', 'U', 'D')) THEN
         INSERT INTO sc_audit.tb_user_audit (
-            id, username, password, active, modif_ts, modif_user, op)
+            username, password, active, modif_ts, modif_user, op)
             VALUES
             (NEW.id, NEW.username, NEW.password, NEW.active, now(), 'foo', op); 
 
