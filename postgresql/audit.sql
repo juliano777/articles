@@ -153,8 +153,7 @@ DECLARE
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
-            (%s.username, %s.password, %s.active, now(), 'foo', op);
-        RETURN %s;
+            (%s.username, %s.password, %s.active, now(), 'foo', op);        
         $$;
 
     sql TEXT;
@@ -162,16 +161,16 @@ DECLARE
 BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
-        sql := format(sql_template, old_new, old_new, old_new, old_new);
+        sql := format(sql_template, old_new, old_new, old_new);
         EXECUTE sql;        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
-        sql := format(sql_template, old_new, old_new, old_new, old_new);
+        sql := format(sql_template, old_new, old_new, old_new);
         EXECUTE sql;
     END IF;
 
-    RETURN NULL;
+    RETURN old_new;
 
 END;$body$ LANGUAGE PLPGSQL;
 
