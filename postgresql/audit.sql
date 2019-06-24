@@ -42,6 +42,8 @@ RETURNS TABLE (
                date_end date) AS $body$
 
 /*
+Auxiliary function - fc_aux_year_month
+
 This function returns a set of 12 (twelve) tuples corresponding to the
 months of the year.
 Each row has 3 (three) fields:
