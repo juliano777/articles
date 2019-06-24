@@ -154,8 +154,15 @@ BEGIN
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
-            (NEW.username, NEW.password, NEW.active, now(), 'foo', op); 
+            (NEW.username, NEW.password, NEW.active, now(), 'foo', op);
+        RETURN NEW;
 
+    ELSIF (op = 'D') THEN
+        INSERT INTO sc_audit.tb_user_audit (
+            username, password, active, modif_ts, modif_user, op)
+            VALUES
+            (OLD.username, OLD.password, OLD.active, now(), 'foo', op);
+        RETURN OLD;
     END IF;
 
     RETURN NULL;
