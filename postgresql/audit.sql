@@ -158,7 +158,7 @@ DECLARE
             modif_user,
             op)
             VALUES 
-            (%s.username, %s.password, %s.active, now(), 'foo', op);        
+            (new.username, new.password, new.active, now(), 'foo', op);        
         $$;
 
     sql TEXT;
