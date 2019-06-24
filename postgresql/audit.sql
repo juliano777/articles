@@ -136,6 +136,12 @@ SELECT fc_create_partition_range(2019, 2021,
                                  'sc_audit_partitions.tb_user_audit');
 
 
+
+-- Default partition (catch all table):
+
+CREATE TABLE sc_audit_partitions.tb_user_audit_default
+    PARTITION OF sc_audit.tb_user_audit DEFAULT;
+
 -- fc_tg_audit_user ---------------------------------------------------------;
 
 
