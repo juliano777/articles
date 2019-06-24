@@ -148,7 +148,11 @@ RETURNS TRIGGER AS $body$
 
 DECLARE
     op CHAR(1) := left(TG_OP, 1);
-    old_new CHAR(3);
+    username_ TEXT;
+    password_ TEXT;
+    active_ boolean;
+
+
     sql_template TEXT := $$
         INSERT INTO sc_audit.tb_user_audit (
             username,
@@ -158,14 +162,20 @@ DECLARE
             modif_user,
             op)
             VALUES 
-            (%s.username, %s.password, %s.active, now(), 'foo', op);        
+            ('%s', '%s', '%s', 'foo', op);        
         $$;
 
     sql TEXT;
 
 BEGIN
     IF (op IN ('I', 'U')) THEN
-        old_new := 'NEW';
+        username_ := NEW.username;
+        password_ := NEW.password;
+        active_ := NEW.active;
+
+
+
+
         sql := format(sql_template, old_new, old_new, old_new);
         EXECUTE sql USING NEW;        
 
