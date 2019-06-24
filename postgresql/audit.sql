@@ -162,7 +162,7 @@ DECLARE
             modif_user,
             op)
             VALUES 
-            ('%s', '%s', '%s', 'foo', op);        
+            ('%s', '%s', %s, 'foo', op);        
         $$;
 
     sql TEXT;
