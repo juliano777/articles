@@ -12,7 +12,7 @@ CREATE TABLE tb_user_audit(
     id int,
     name VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
-    active boolean,
+    active boolean NOT NULL,
     modif_ts TIMESTAMP WITH TIME ZONE NOT NULL,  -- Modification date
     modif_user VARCHAR(50) NOT NULL,  -- User who made the change
     op CHAR(1) NOT NULL)   -- Operation (INSERT: I, UPDATE: U, DELETE: D)
