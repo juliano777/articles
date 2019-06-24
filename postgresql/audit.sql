@@ -33,7 +33,11 @@ CREATE SCHEMA sc_partitions;
 
 
 
-CREATE OR REPLACE FUNCTION fc_year_month(year INT)
+-- Functions to partitions ==================================================;
+
+
+
+CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
 RETURNS TABLE (
                year_month text,
                date_start date,
@@ -88,7 +92,7 @@ DECLARE
 
 BEGIN
     FOR i IN year_start .. year_end LOOP
-        FOR r IN SELECT year_month, date_start, date_end FROM fc_year_month(i) LOOP
+        FOR r IN SELECT year_month, date_start, date_end FROM fc_aux_year_month(i) LOOP
             sql := format(sql_template, schema_, table_, r.year_month, table_,
                           r.date_start, r.date_end, tablespace_);
             EXECUTE sql;              
