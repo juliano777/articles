@@ -43,12 +43,6 @@ CREATE TABLE sc_audit.tb_user_audit(
 
 -- fc_aux_year_month --------------------------------------------------------;
 
-CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
-RETURNS TABLE (
-               year_month text,
-               date_start date,
-               date_end date) AS $body$
-
 /*
 Auxiliary function - fc_aux_year_month
 
@@ -61,6 +55,12 @@ date_start::date - Date of first day of current month
 date_end::date - Date of first day of next month
 
 */;
+
+CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
+RETURNS TABLE (
+               year_month text,
+               date_start date,
+               date_end date) AS $body$
 
 DECLARE
     sql varchar := $$
@@ -92,14 +92,6 @@ END;$body$ LANGUAGE PLPGSQL;
 
 -- fc_create_partition_range -------------------------------------------------;
 
-CREATE OR REPLACE FUNCTION fc_create_partition_range(
-    year_start int,
-    year_end int,
-    table_ text,
-    schema_ text DEFAULT 'public',
-    tablespace_ text DEFAULT 'pg_default')
-RETURNS TEXT AS $body$
-
 /* 
 Function - fc_create_partition_range
 
@@ -109,6 +101,13 @@ of end.
 
 */;
 
+CREATE OR REPLACE FUNCTION fc_create_partition_range(
+    year_start int,
+    year_end int,
+    table_ text,
+    schema_ text DEFAULT 'public',
+    tablespace_ text DEFAULT 'pg_default')
+RETURNS TEXT AS $body$
 
 DECLARE
     r record;
