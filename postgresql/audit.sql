@@ -259,3 +259,14 @@ UPDATE tb_user SET password = 'admin' WHERE username = 'admin';
  admin    | admin    | t      | 2019-06-24 18:31:37.00592+00  | foo        | U
 */
 
+
+
+TABLE tb_user;
+
+/*
+ username | password | active 
+----------+----------+--------
+ newuser  | 456      | t
+ admin    | admin    | t
+*/
+
