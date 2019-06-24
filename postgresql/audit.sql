@@ -35,6 +35,8 @@ CREATE SCHEMA sc_partitions;
 
 -- Functions to partitions ==================================================;
 
+-- fc_aux_year_month --------------------------------------------------------;
+
 CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
 RETURNS TABLE (
                year_month text,
