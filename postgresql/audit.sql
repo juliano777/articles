@@ -147,10 +147,12 @@ CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user()
 RETURNS TRIGGER AS $body$
 
 DECLARE
-    op CHAR(1) := left(TG_OP, 1);    
+    op CHAR(1) := left(TG_OP, 1);
+    old_new CHAR(3);
 
 BEGIN
     IF (op IN ('I', 'U')) THEN
+        old_new := 'NEW';
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
@@ -158,6 +160,7 @@ BEGIN
         RETURN NEW;
 
     ELSIF (op = 'D') THEN
+        old_new := 'OLD';
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
