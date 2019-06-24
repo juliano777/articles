@@ -46,7 +46,7 @@ This function returns a set of 12 (twelve) tuples corresponding to the
 months of the year.
 Each row has 3 (three) fields:
 
-year_month::
+year_month::text
 date_start::
 date_end::
 
