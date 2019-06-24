@@ -195,3 +195,17 @@ TABLE sc_audit.tb_user_audit ;
  newuser  | 456      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
 */;
+
+
+
+
+TABLE sc_audit.tb_user_audit ;
+
+/*
+ username | password | active |           modif_ts            | modif_user | op 
+----------+----------+--------+-------------------------------+------------+----
+ admin    | 123      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+ newuser  | 456      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+ admin    | 1221     | t      | 2019-06-24 15:56:48.979498+00 | foo        | U
+*/;
