@@ -76,7 +76,7 @@ BEGIN
     FOR i IN year_start .. year_end LOOP
         FOR r IN SELECT year_month, date_start, date_end FROM fc_year_month(i) LOOP
             sql := format(sql_template, schema_, table_, r.year_month, table_,
-                          r.date_start, r.date_end);
+                          r.date_start, r.date_end, tablespace);
             EXECUTE sql;              
         END LOOP;  
     END LOOP;
