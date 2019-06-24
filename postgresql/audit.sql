@@ -234,8 +234,9 @@ TABLE sc_audit.tb_user_audit ;
 
 DELETE FROM tb_user WHERE username = 'olduser';
 
-/*
 TABLE sc_audit.tb_user_audit;
+
+/*
  username | password | active |           modif_ts            | modif_user | op 
 ----------+----------+--------+-------------------------------+------------+----
  admin    | 123      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
@@ -244,4 +245,17 @@ TABLE sc_audit.tb_user_audit;
  olduser  | 789      | t      | 2019-06-24 18:30:41.693387+00 | foo        | D
 */
 
+
+
+UPDATE tb_user SET password = 'admin' WHERE username = 'admin';
+
+/*
+ username | password | active |           modif_ts            | modif_user | op 
+----------+----------+--------+-------------------------------+------------+----
+ admin    | 123      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ newuser  | 456      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 18:30:41.693387+00 | foo        | D
+ admin    | admin    | t      | 2019-06-24 18:31:37.00592+00  | foo        | U
+*/
 
