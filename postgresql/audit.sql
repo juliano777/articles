@@ -119,6 +119,10 @@ BEGIN
 END;$body$ LANGUAGE PLPGSQL;
 
 
+
+-- fc_tg_audit_user ---------------------------------------------------------;
+
+
 CREATE OR REPLACE FUNCTION audit.if_modified_func() RETURNS TRIGGER AS $body$
 DECLARE
     v_old_data TEXT;
