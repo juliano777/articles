@@ -142,52 +142,6 @@ SELECT fc_create_partition_range(2019, 2021,
                                  'sc_audit_partitions.tb_user_audit');
 
 
-INSERT INTO tb_user (username, password) VALUES 
-('admin', '123'),
-('newuser', '456'),
-('olduser', '789');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- fc_tg_audit_user ---------------------------------------------------------;
 
 
@@ -215,4 +169,7 @@ CREATE TRIGGER tg_audit_user
 
 
 
-
+INSERT INTO tb_user (username, password) VALUES 
+('admin', '123'),
+('newuser', '456'),
+('olduser', '789');
