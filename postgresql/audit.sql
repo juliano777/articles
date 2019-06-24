@@ -170,7 +170,7 @@ BEGIN
         EXECUTE sql;
     END IF;
 
-    RETURN old_new;
+    RETURN NULL;
 
 END;$body$ LANGUAGE PLPGSQL;
 
