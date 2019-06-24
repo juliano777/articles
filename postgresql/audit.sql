@@ -142,7 +142,7 @@ CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user()
 RETURNS TRIGGER AS $body$
 
 DECLARE
-    op := left(TG_OP, 1);    
+    op CHAR(1) := left(TG_OP, 1);    
 
 BEGIN
     IF (op IN ('I', 'U', 'D')) THEN
