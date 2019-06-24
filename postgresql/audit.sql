@@ -137,6 +137,15 @@ BEGIN
 END;$body$ LANGUAGE PLPGSQL;
 
 
+SELECT fc_create_partition_range(2019, 2021,
+                                 'sc_audit.tb_user_audit',
+                                 'sc_audit_partitions.tb_user_audit');
+
+
+
+
+
+
 
 
 
