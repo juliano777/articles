@@ -156,5 +156,10 @@ BEGIN
 END;$body$ LANGUAGE PLPGSQL;
 
 
+CREATE TRIGGER tg_audit_user
+    AFTER INSERT OR UPDATE OR DELETE ON tb_user
+    FOR EACH ROW EXECUTE PROCEDURE sc_audit.fc_tg_audit_user();
+
+
 
 
