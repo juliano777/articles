@@ -35,13 +35,16 @@ CREATE SCHEMA sc_partitions;
 
 -- Functions to partitions ==================================================;
 
-
-
 CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
 RETURNS TABLE (
                year_month text,
                date_start date,
                date_end date) AS $body$
+
+/*
+
+
+*/;
 
 DECLARE
     sql varchar := $$
