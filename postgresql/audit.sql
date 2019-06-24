@@ -151,8 +151,13 @@ DECLARE
     old_new CHAR(3);
     sql_template TEXT := $$
         INSERT INTO sc_audit.tb_user_audit (
-            username, password, active, modif_ts, modif_user, op)
-            VALUES
+            username,
+            password,
+            active,
+            modif_ts,
+            modif_user,
+            op)
+            VALUES 
             (%s.username, %s.password, %s.active, now(), 'foo', op);        
         $$;
 
