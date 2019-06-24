@@ -42,8 +42,17 @@ RETURNS TABLE (
                date_end date) AS $body$
 
 /*
+This function returns a set of 12 (twelve) tuples corresponding to the
+months of the year.
+Each row has 3 (three) fields:
+
+year_month::
+date_start::
+date_end::
 
 
+
+(2019_01,2019-01-01,2019-02-01)
 */;
 
 DECLARE
