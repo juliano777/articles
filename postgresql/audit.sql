@@ -172,12 +172,8 @@ BEGIN
         username_ := NEW.username;
         password_ := NEW.password;
         active_ := NEW.active;
-
-
-
-
-        sql := format(sql_template, old_new, old_new, old_new);
-        EXECUTE sql USING NEW;        
+        sql := format(sql_template, username_, password_, active_);
+        EXECUTE sql;        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
