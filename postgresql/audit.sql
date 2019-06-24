@@ -2,11 +2,18 @@ CREATE DATABASE db_audit;
 
 \c db_audit
 
+-- Table creations ==========================================================;
+
+-- Original table of users
+
 CREATE TABLE tb_user(
     id serial PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
     active boolean DEFAULT TRUE);
+
+
+-- Audit table of users (partitioned)
 
 CREATE TABLE tb_user_audit(
     id int,
@@ -89,7 +96,24 @@ BEGIN
 END;$body$ LANGUAGE PLPGSQL;
 
 
-
+CREATE OR REPLACE FUNCTION audit.if_modified_func() RETURNS TRIGGER AS $body$
+DECLARE
+    v_old_data TEXT;
+    v_new_data TEXT;
+BEGIN
+    /*  If this actually for real auditing (where you need to log EVERY action),
+        then you would need to use something like dblink or plperl that could log outside the transaction,
+        regardless of whether the transaction committed or rolled back.
+    */
+ 
+    /* This dance with casting the NEW and OLD values to a ROW is not necessary in pg 9.0+ */
+ 
+    IF (TG_OP = 'UPDATE') THEN
+        v_old_data := ROW(OLD.*);
+        v_new_data := ROW(NEW.*);
+        INSERT INTO audit.logged_actions (schema_name,table_name,user_name,action,original_data,new_data,query) 
+        VALUES (TG_TABLE_SCHEMA::TEXT,TG_TABLE_NAME::TEXT,session_user::TEXT,substring(TG_OP,1,1),v_old_data,v_new_data, current_query());
+        RETURN NEW;
 
 
 
