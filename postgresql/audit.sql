@@ -84,6 +84,8 @@ END;$body$ LANGUAGE PLPGSQL;
 
 
 
+-- fc_create_partition_range -------------------------------------------------;
+
 CREATE OR REPLACE FUNCTION fc_create_partition_range(
     year_start int,
     year_end int,
