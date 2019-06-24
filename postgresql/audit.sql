@@ -162,7 +162,7 @@ DECLARE
             modif_user,
             op)
             VALUES 
-            ('%s', '%s', %s, 'foo', op);        
+            ('%s', '%s', '%s', now(), 'foo', '%s');        
         $$;
 
     sql TEXT;
@@ -174,13 +174,12 @@ BEGIN
         active_ := NEW.active;
 
     ELSIF (op = 'D') THEN
-        username_ := NEW.username;
-        password_ := NEW.password;
-        active_ := NEW.active;
+        username_ := OLD.username;
+        password_ := OLD.password;
+        active_ := OLD.active;
+    END IF;   
 
-    END IF;
-
-        sql := format(sql_template, username_, password_, active_);
+        sql := format(sql_template, username_, password_, active_, op);
         EXECUTE sql;
 
     RETURN NULL;
