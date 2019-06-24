@@ -33,10 +33,6 @@ CREATE TABLE sc_audit.tb_user_audit(
 
 
 
-
-
-
-
 -- Functions to partitions ==================================================;
 
 -- fc_aux_year_month --------------------------------------------------------;
