@@ -154,7 +154,7 @@ BEGIN
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
-            (NEW.id, NEW.username, NEW.password, NEW.active, now(), 'foo', op); 
+            (NEW.username, NEW.password, NEW.active, now(), 'foo', op); 
 
     END IF;
 
