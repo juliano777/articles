@@ -149,15 +149,20 @@ RETURNS TRIGGER AS $body$
 DECLARE
     op CHAR(1) := left(TG_OP, 1);
     old_new CHAR(3);
+    sql_template TEXT; := $$
+        INSERT INTO sc_audit.tb_user_audit (
+            username, password, active, modif_ts, modif_user, op)
+            VALUES
+            (%s.username, NEW.password, NEW.active, now(), 'foo', op);
+        RETURN %s;
+        $$;
+
+    sql TEXT
 
 BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
-        INSERT INTO sc_audit.tb_user_audit (
-            username, password, active, modif_ts, modif_user, op)
-            VALUES
-            (NEW.username, NEW.password, NEW.active, now(), 'foo', op);
-        RETURN NEW;
+        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
