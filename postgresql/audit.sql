@@ -48,7 +48,7 @@ year_month::text - A string with year and month
 date_start::date - Date of first day of current month
 date_end::date - Date of first day of next month
 
-*/;
+*/
 
 CREATE OR REPLACE FUNCTION fc_aux_year_month(year INT)
 RETURNS TABLE (
@@ -208,7 +208,7 @@ TABLE tb_user;
  admin    | 123      | t
  newuser  | 456      | t
  olduser  | 789      | t
-*/;
+*/
 
 
 
@@ -220,7 +220,7 @@ TABLE sc_audit.tb_user_audit ;
  admin    | 123      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  newuser  | 456      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
-*/;
+*/
 
 
 
@@ -234,7 +234,7 @@ TABLE sc_audit.tb_user_audit ;
  newuser  | 456      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  admin    | 1221     | t      | 2019-06-24 15:56:48.979498+00 | foo        | U
-*/;
+*/
 
 
 
