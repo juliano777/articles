@@ -142,19 +142,14 @@ CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user()
 RETURNS TRIGGER AS $body$
 
 DECLARE
-    v_old_data TEXT;
-    v_new_data TEXT;
-
-    
+    op := left(TG_OP, 1);    
 
 BEGIN
-    IF (left(TG_OP, 1) IN ('I', 'U', 'D')) THEN
-        INSERT INTO sc_audit.tb_user_audit (id, username VARCHAR(50) NOT NULL,
-    password VARCHAR(12) NOT NULL,
-    active boolean NOT NULL,
-    modif_ts TIMESTAMP WITH TIME ZONE NOT NULL,  -- Modification date
-    modif_user VARCHAR(50) NOT NULL,  -- User who made the change
-    op
+    IF (op IN ('I', 'U', 'D')) THEN
+        INSERT INTO sc_audit.tb_user_audit (
+            id, username, password, active, modif_ts, modif_user, op)
+            VALUES
+            (NEW.id, NEW.username, NEW.password, NEW.active, now(), 'foo', op); 
 
     END IF;
 
