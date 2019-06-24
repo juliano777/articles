@@ -13,9 +13,17 @@ CREATE TABLE tb_user(
     active boolean DEFAULT TRUE);
 
 
+
+-- Schema for the partitions;
+
+CREATE SCHEMA sc_audit_partitions;
+
+CREATE SCHEMA sc_audit;
+
+
 -- Audit table of users (partitioned);
 
-CREATE TABLE tb_user_audit(
+CREATE TABLE sc_audit.tb_user_audit(
     id int,
     name VARCHAR(50) NOT NULL,
     password VARCHAR(12) NOT NULL,
@@ -27,9 +35,7 @@ CREATE TABLE tb_user_audit(
 
 
 
--- Schema for the partitions;
 
-CREATE SCHEMA sc_partitions;
 
 
 
