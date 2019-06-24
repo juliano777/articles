@@ -158,7 +158,7 @@ DECLARE
             modif_user,
             op)
             VALUES 
-            (new.username, new.password, new.active, now(), 'foo', op);        
+            (%s.username, %s.password, %s.active, now(), 'foo', op);        
         $$;
 
     sql TEXT;
@@ -166,8 +166,8 @@ DECLARE
 BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
-        -- sql := format(sql_template, old_new, old_new, old_new);
-        EXECUTE sql_template;        
+        sql := format(sql_template, old_new, old_new, old_new);
+        EXECUTE sql;        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
