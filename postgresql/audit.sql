@@ -93,7 +93,7 @@ This function creates a range of partitions given a a year of start and year
 of end.
  
 
-*/;
+*/
 
 CREATE OR REPLACE FUNCTION fc_create_partition_range(
     year_start int,
