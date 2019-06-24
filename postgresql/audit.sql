@@ -144,6 +144,9 @@ RETURNS TRIGGER AS $body$
 DECLARE
     v_old_data TEXT;
     v_new_data TEXT;
+
+    op char(1) := left(TG_OP, 1);
+
 BEGIN
     /*  If this actually for real auditing (where you need to log EVERY action),
         then you would need to use something like dblink or plperl that could log outside the transaction,
