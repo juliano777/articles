@@ -114,7 +114,7 @@ RETURNS TEXT AS $body$
 DECLARE
     r record;
     sql_template text := $$
-        CREATE TABLE IF NOT EXISTS %s.%s_%s
+        CREATE TABLE IF NOT EXISTS %s_%s
             PARTITION OF %s.%s
             FOR VALUES FROM ('%s') TO ('%s')
             TABLESPACE %s
@@ -134,6 +134,41 @@ BEGIN
     RETURN table_;
 
 END;$body$ LANGUAGE PLPGSQL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
