@@ -150,7 +150,7 @@ DECLARE
     op CHAR(1) := left(TG_OP, 1);    
 
 BEGIN
-    IF (op IN ('I', 'U', 'D')) THEN
+    IF (op IN ('I', 'U')) THEN
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
@@ -209,3 +209,7 @@ TABLE sc_audit.tb_user_audit ;
  olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
  admin    | 1221     | t      | 2019-06-24 15:56:48.979498+00 | foo        | U
 */;
+
+
+
+DELETE FROM tb_user WHERE username = 'olduser';
