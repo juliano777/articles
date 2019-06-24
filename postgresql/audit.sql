@@ -94,6 +94,12 @@ CREATE OR REPLACE FUNCTION fc_create_partition_range(
     tablespace_ text DEFAULT 'pg_default')
 RETURNS TEXT AS $body$
 
+/* 
+
+
+*/;
+
+
 DECLARE
     r record;
     sql_template text := $$
