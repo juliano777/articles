@@ -153,15 +153,16 @@ DECLARE
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
-            (%s.username, NEW.password, NEW.active, now(), 'foo', op);
+            (%s.username, %s.password, %s.active, now(), 'foo', op);
         RETURN %s;
         $$;
 
-    sql TEXT
+    sql TEXT;
 
 BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
+        sql := format(sql_template, 
         
 
     ELSIF (op = 'D') THEN
