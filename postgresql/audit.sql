@@ -190,9 +190,9 @@ CREATE TRIGGER tg_audit_user
 
 
 INSERT INTO tb_user (username, password) VALUES 
-('admin', '123'),
-('newuser', '456'),
-('olduser', '789');
+    ('admin', '123'),
+    ('newuser', '456'),
+    ('olduser', '789');
 
 TABLE tb_user;
 
@@ -233,3 +233,15 @@ TABLE sc_audit.tb_user_audit ;
 
 
 DELETE FROM tb_user WHERE username = 'olduser';
+
+/*
+TABLE sc_audit.tb_user_audit;
+ username | password | active |           modif_ts            | modif_user | op 
+----------+----------+--------+-------------------------------+------------+----
+ admin    | 123      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ newuser  | 456      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 18:30:24.799481+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 18:30:41.693387+00 | foo        | D
+*/
+
+
