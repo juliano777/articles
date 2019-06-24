@@ -47,8 +47,8 @@ months of the year.
 Each row has 3 (three) fields:
 
 year_month::text
-date_start::
-date_end::
+date_start::date
+date_end::date
 
 
 
