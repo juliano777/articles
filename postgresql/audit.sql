@@ -167,7 +167,7 @@ BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
         sql := format(sql_template, old_new, old_new, old_new);
-        EXECUTE sql;        
+        EXECUTE sql USING NEW;        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
