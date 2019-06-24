@@ -105,9 +105,8 @@ CREATE OR REPLACE FUNCTION fc_create_partition_range(
     year_start int,
     year_end int,
     table_ text,
-    schema_ text DEFAULT 'public',
-    tspace_table text DEFAULT 'pg_default', -- Tablespace of the table
-    tspace_part text DEFAULT 'pg_default', -- Tablespace of the partition
+    part_ text,
+    tablespace_ text DEFAULT 'pg_default'
     )
 RETURNS TEXT AS $body$
 
@@ -115,7 +114,7 @@ DECLARE
     r record;
     sql_template text := $$
         CREATE TABLE IF NOT EXISTS %s_%s
-            PARTITION OF %s.%s
+            PARTITION OF %s
             FOR VALUES FROM ('%s') TO ('%s')
             TABLESPACE %s
     $$;
@@ -124,9 +123,11 @@ DECLARE
 
 BEGIN
     FOR i IN year_start .. year_end LOOP
-        FOR r IN SELECT year_month, date_start, date_end FROM fc_aux_year_month(i) LOOP
-            sql := format(sql_template, schema_, table_, r.year_month, table_,
-                          r.date_start, r.date_end, tspace_table, tspace_part);
+        FOR r IN SELECT year_month, date_start, date_end
+            FROM fc_aux_year_month(i) LOOP
+            sql := format(
+                sql_template, part_, r.year_month, table_, r.date_start,
+                r.date_end, tablespace_);
             EXECUTE sql;              
         END LOOP;  
     END LOOP;
