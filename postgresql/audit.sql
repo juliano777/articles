@@ -106,14 +106,16 @@ CREATE OR REPLACE FUNCTION fc_create_partition_range(
     year_end int,
     table_ text,
     schema_ text DEFAULT 'public',
-    tablespace_ text DEFAULT 'pg_default')
+    tspace_table text DEFAULT 'pg_default', -- Tablespace of the table
+    tspace_part text DEFAULT 'pg_default', -- Tablespace of the partition
+    )
 RETURNS TEXT AS $body$
 
 DECLARE
     r record;
     sql_template text := $$
         CREATE TABLE IF NOT EXISTS %s.%s_%s
-            PARTITION OF %s
+            PARTITION OF %s.%s
             FOR VALUES FROM ('%s') TO ('%s')
             TABLESPACE %s
     $$;
