@@ -160,7 +160,7 @@ BEGIN
 
     END IF;
 
-    RETURN;
+    RETURN NULL;
 
 END;$body$ LANGUAGE PLPGSQL;
 
