@@ -149,7 +149,7 @@ RETURNS TRIGGER AS $body$
 DECLARE
     op CHAR(1) := left(TG_OP, 1);
     old_new CHAR(3);
-    sql_template TEXT; := $$
+    sql_template TEXT := $$
         INSERT INTO sc_audit.tb_user_audit (
             username, password, active, modif_ts, modif_user, op)
             VALUES
