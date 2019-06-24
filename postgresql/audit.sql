@@ -173,3 +173,25 @@ INSERT INTO tb_user (username, password) VALUES
 ('admin', '123'),
 ('newuser', '456'),
 ('olduser', '789');
+
+TABLE tb_user;
+
+/*
+ username | password | active 
+----------+----------+--------
+ admin    | 123      | t
+ newuser  | 456      | t
+ olduser  | 789      | t
+*/;
+
+
+
+TABLE sc_audit.tb_user_audit ;
+
+/*
+ username | password | active |           modif_ts            | modif_user | op 
+----------+----------+--------+-------------------------------+------------+----
+ admin    | 123      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+ newuser  | 456      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+ olduser  | 789      | t      | 2019-06-24 15:54:43.544931+00 | foo        | I
+*/;
