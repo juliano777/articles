@@ -46,13 +46,10 @@ This function returns a set of 12 (twelve) tuples corresponding to the
 months of the year.
 Each row has 3 (three) fields:
 
-year_month::text
-date_start::date
-date_end::date
+year_month::text - A string with year and month
+date_start::date - Date of first day of current month
+date_end::date - Date of first day of next month
 
-
-
-(2019_01,2019-01-01,2019-02-01)
 */;
 
 DECLARE
