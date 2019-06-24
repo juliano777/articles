@@ -162,16 +162,13 @@ DECLARE
 BEGIN
     IF (op IN ('I', 'U')) THEN
         old_new := 'NEW';
-        sql := format(sql_template, 
-        
+        sql := format(sql_template, old_new, old_new, old_new, old_new);
+        EXECUTE sql;        
 
     ELSIF (op = 'D') THEN
         old_new := 'OLD';
-        INSERT INTO sc_audit.tb_user_audit (
-            username, password, active, modif_ts, modif_user, op)
-            VALUES
-            (OLD.username, OLD.password, OLD.active, now(), 'foo', op);
-        RETURN OLD;
+        sql := format(sql_template, old_new, old_new, old_new, old_new);
+        EXECUTE sql;
     END IF;
 
     RETURN NULL;
