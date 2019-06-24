@@ -18,6 +18,8 @@ CREATE TABLE tb_user_audit(
     op CHAR(1) NOT NULL)   -- Operation (INSERT: I, UPDATE: U, DELETE: D)
     PARTITION BY RANGE (modif_ts);
 
+CREATE SCHEMA sc_partitions;
+
 
 
 CREATE OR REPLACE FUNCTION fc_year_month(year INT)
