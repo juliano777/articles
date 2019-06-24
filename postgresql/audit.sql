@@ -13,7 +13,7 @@ CREATE TABLE tb_user(
     active boolean DEFAULT TRUE);
 
 
--- Audit table of users (partitioned)
+-- Audit table of users (partitioned);
 
 CREATE TABLE tb_user_audit(
     id int,
@@ -24,6 +24,10 @@ CREATE TABLE tb_user_audit(
     modif_user VARCHAR(50) NOT NULL,  -- User who made the change
     op CHAR(1) NOT NULL)   -- Operation (INSERT: I, UPDATE: U, DELETE: D)
     PARTITION BY RANGE (modif_ts);
+
+
+
+-- Schema for the partitions;
 
 CREATE SCHEMA sc_partitions;
 
