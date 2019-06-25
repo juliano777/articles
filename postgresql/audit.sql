@@ -168,7 +168,6 @@ END;$body$ LANGUAGE PLPGSQL;
 
 -- fc_tg_audit_user ---------------------------------------------------------;
 
-
 CREATE OR REPLACE FUNCTION sc_audit.fc_tg_audit_user()
 RETURNS TRIGGER AS $body$
 
