@@ -228,10 +228,15 @@ CREATE TABLE sc_audit_partitions.tb_user_audit_default
 
 
 
+-- Trigger creation;
 
 CREATE TRIGGER tg_audit_user
     AFTER INSERT OR UPDATE OR DELETE ON tb_user
     FOR EACH ROW EXECUTE PROCEDURE sc_audit.fc_tg_audit_user();
+
+
+
+-- Initial data;
 
 
 
