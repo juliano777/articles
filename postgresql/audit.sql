@@ -166,19 +166,6 @@ END;$body$ LANGUAGE PLPGSQL;
 
 
 
--- Using the function to create partitions from 2019 to 2021;
-
-SELECT fc_create_partition_range(2019, 2021,
-                                 'sc_audit.tb_user_audit',
-                                 'sc_audit_partitions.tb_user_audit');
-
-
-
--- Default partition (catch all table):
-
-CREATE TABLE sc_audit_partitions.tb_user_audit_default
-    PARTITION OF sc_audit.tb_user_audit DEFAULT;
-
 -- fc_tg_audit_user ---------------------------------------------------------;
 
 
@@ -224,6 +211,23 @@ BEGIN
     RETURN NULL;
 
 END;$body$ LANGUAGE PLPGSQL;
+
+
+
+-- Using the function to create partitions from 2019 to 2021;
+
+SELECT fc_create_partition_range(2019, 2021,
+                                 'sc_audit.tb_user_audit',
+                                 'sc_audit_partitions.tb_user_audit');
+
+
+
+-- Default partition (catch all table):
+
+CREATE TABLE sc_audit_partitions.tb_user_audit_default
+    PARTITION OF sc_audit.tb_user_audit DEFAULT;
+
+
 
 
 CREATE TRIGGER tg_audit_user
