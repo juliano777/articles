@@ -165,6 +165,9 @@ BEGIN
 END;$body$ LANGUAGE PLPGSQL;
 
 
+
+-- Using the function to create partitions from 2019 to 2021;
+
 SELECT fc_create_partition_range(2019, 2021,
                                  'sc_audit.tb_user_audit',
                                  'sc_audit_partitions.tb_user_audit');
