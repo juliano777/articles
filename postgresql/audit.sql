@@ -48,6 +48,9 @@ CREATE TABLE tb_user(
 
 CREATE SCHEMA sc_audit_partitions;
 
+
+-- Schema for audit objects;
+
 CREATE SCHEMA sc_audit;
 
 
