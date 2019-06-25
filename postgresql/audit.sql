@@ -1,3 +1,16 @@
+-- Audit / Log Tables
+
+/*
+    Audit / log tables are regular tables whose differential is their purpose, which is to track transactions from other table.
+    Its records should never be updated, the only accepted DML write operation is INSERT.
+    It is highly recommended to partition an audit table, because when a certain range of records is no longer needed, usually older data, you just have to delete the partitions (DROP), which is a much more elegant and efficient solution than using DELETE.
+    Audit tables allow us to know who did something, when did, check for wrong updates, maintain history and among other things also do analytic queries.
+    Recordings in audit tables are triggered by triggers, which are triggered by INSERT, UPDATE, and DELETE events.
+*/
+
+
+
+
 -- Database creation for the tests:
 
 CREATE DATABASE db_audit;
