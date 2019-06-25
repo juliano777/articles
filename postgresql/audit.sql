@@ -10,6 +10,18 @@
 
 
 
+-- Table Partitioning
+
+/*
+     With PostgreSQL 10 was added the declarative partitioning feature, which came to make things much easier.
+     It is strongly recommended to partition large tables so that it is easier to maintain, avoid locks and there are also performance gains.
+     In a partitioned table, a partition is a subtable that contains data given an established criteria, such as a date range, for example.
+     For audit tables partitioning is a good practice, because if a particular data range or other partitioning criteria are no longer needed, simply remove partitions with DROP, a much less costly and clean operation for a database than DELETE.
+*/
+
+
+
+
 
 -- Database creation for the tests:
 
