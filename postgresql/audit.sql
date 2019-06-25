@@ -1,4 +1,10 @@
+-- Database creation for the tests:
+
 CREATE DATABASE db_audit;
+
+
+
+-- Connect to the database:
 
 \c db_audit
 
