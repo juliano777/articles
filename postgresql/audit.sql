@@ -238,12 +238,14 @@ CREATE TRIGGER tg_audit_user
 
 -- Initial data;
 
-
-
 INSERT INTO tb_user (username, password) VALUES 
     ('admin', '123'),
     ('newuser', '456'),
     ('olduser', '789');
+
+
+
+-- ;
 
 TABLE tb_user;
 
