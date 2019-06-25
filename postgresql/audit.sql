@@ -35,7 +35,7 @@ CREATE DATABASE db_audit;
 
 -- Table creations ==========================================================;
 
--- Original table of users
+-- Original table of users (audited table)
 
 CREATE TABLE tb_user(
     username VARCHAR(50) PRIMARY KEY,
