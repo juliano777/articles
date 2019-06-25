@@ -29,7 +29,7 @@ CREATE DATABASE db_audit;
 
 
 
--- Connect to the database:
+-- Connect to the database (via psql):
 
 \c db_audit
 
