@@ -133,6 +133,8 @@ fi
     -Pkubernetes \
     -Pkafka \
     -Pflume \
+    -Phadoop-3.2 \
+    -Phadoop-cloud \
     -Pscala-${SCALA_VERSION} \
     -T 1C
 
