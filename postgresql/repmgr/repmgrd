@@ -1,0 +1,120 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          repmgrd
+# Required-Start:    $local_fs $remote_fs $network $syslog postgresql
+# Required-Stop:     $local_fs $remote_fs $network $syslog postgresql
+# Should-Start:      $syslog postgresql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop repmgrd
+# Description:       Enable repmgrd replication management and monitoring daemon for PostgreSQL
+### END INIT INFO
+
+REPMGRD_CONF='/etc/postgresql/repmgr/repmgrd.conf'
+
+source ${REPMGRD_CONF}
+
+check_pg(){
+    N_TRY=0
+
+    while [ ${N_TRY} -lt 5 ]; do
+        if (eval ${PSQL_PG_ALIVE}); then
+            return 0
+        else
+            sleep 5
+            eval ${PSQL_PG_ALIVE}
+        fi
+        
+        let N_TRY++
+    done
+   
+    echo -e "Error: PostgreSQL is not running!!!\n" > ${LOG_FILE}    
+
+    return 1
+}
+
+is_master(){
+    if [ `eval ${PSQL_NODE_TYPE}` == 'master' ] && \
+       (! ping -c3 ${MASTER_NODE_IP} &> /dev/null); then 
+
+        ifconfig ${CLUSTER_IF}:0 ${MASTER_NODE_IP}
+        (sleep 10 && service repmgrd stop)
+    fi
+}
+
+get_pid(){
+    cat ${PID_FILE}
+}	
+
+
+status_true(){
+    echo -e "\nrepmgrd is running: (PID `get_pid`)\n"
+    return 0
+}
+
+status_false(){
+    echo -e "\nrepgrd is not running!\n"
+    return 1
+}
+
+
+do_status(){
+    if [ -s ${PID_FILE} ]; then
+        status_true
+    else
+        status_false
+    fi
+}
+
+do_start(){
+    if (! check_pg); then
+        echo -e "PostgreSQL fora!"
+        exit 1
+    fi
+
+    if [ ! -s ${PID_FILE} ]; then
+        eval ${REPMGRD_CMD}
+    fi
+  
+    is_master
+}
+
+do_stop(){
+   if [ -s ${PID_FILE} ]; then 
+        kill `cat ${PID_FILE}` &> /dev/null
+        rm -f ${PID_FILE} &> /dev/null
+   fi
+}
+
+do_restart(){
+    do_stop
+    do_start
+}
+
+
+case ${1} in
+
+    "start")
+        echo -e "Starting repmgrd daemon...\n"
+        do_start
+     ;;
+
+    "stop")
+        echo -e "Stopping repmgrd daemon...\n"
+        do_stop
+    ;;
+
+    "restart")
+        echo -e "Restarting repmgrd daemon...\n"
+        do_restart
+    ;;   
+
+    "status")
+        do_status   
+    ;;
+
+    *)
+        echo -e "\nUse ${0} (start | stop | restart | status)\n"
+    ;;
+esac

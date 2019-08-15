@@ -1,0 +1,700 @@
+Tutorial repmgr
+
+===============================================================
+
+Our Test Lab
+
+
+IP             | Hostname (FQDN)       | Initial status
+---------------+-----------------------+-------------------
+192.168.56.2   | sr0.curso.dominio     | primary  
+192.168.56.3   | sr1.curso.dominio     | secondary 1
+192.168.56.4   | sr2.curso.dominio     | secondary 2
+192.168.56.5   | wit.curso.dominio     | witness
+192.168.56.7   | primary.curso.dominio | primary server (virtual IP)
+
+Cluster name: "teste" (test in portuguese)
+
+p. s.: Do not use status as name!!! 
+i. e. "srv_primary" or "srv_secondary".
+The status can change, once when occurs a failover process a secondary
+server can be the new primary.
+
+
+p. s. 2: At least 3 servers are needed to a complete HA design.
+
+Note A complete High-Availability design needs at least 3 servers to still have a backup node after a first failure.
+
+===============================================================
+
+Our Test Lab
+
+
+PostgreSQL version: 9.5
+
+
+repmgr version: 3.1.4
+
+PostgreSQL / repmgr system user: postgres
+
+SO / distro: Linux / CentOS 7
+
+===============================================================
+
+[ all ]
+
+- Install PostgreSQL 9.5
+
+- Install repmgr
+
+- SSH without password to root and postgres users in cluster
+
+
+===============================================================
+
+[all] File: /etc/hosts
+
+# cat << EOF > /etc/hosts
+127.0.0.1 localhost
+127.0.1.1 centos.curso.dominio centos
+192.168.56.2 sr0.curso.dominio sr0
+192.168.56.3 sr1.curso.dominio sr1
+192.168.56.4 sr2.curso.dominio sr2
+192.168.56.5 wit.curso.dominio wit
+192.168.56.7 primary.curso.dominio primary
+EOF
+
+===============================================================
+
+
+[all] Install packages and temporally disable monit
+
+# yum install -y make gcc libxml2-devel openssl-devel readline-devel rsync
+
+# yum clean all
+
+# setenforce Permissive
+
+# sed 's/SELINUX=enforcing/SELINUX=permissive/g' -i /etc/selinux/config
+
+p. s. postgresql-server-dev-9.5
+
+===============================================================
+
+[ all ] Install repmgr
+
+
+Creation of directories for configuration and logs:
+
+# mkdir -p /etc/repmgr
+
+Environment variable to repmgr version (X.Y.Z format):
+
+# read -p 'Type repmgr version to download: ' REPMGRVERSION
+
+
+Number of jobs = cores + 1:
+
+# export NJOBS=`expr \`cat /proc/cpuinfo | egrep ^processor | wc -l\` + 1`
+
+
+Download repmgr:
+
+# wget -c http://repmgr.org/download/repmgr-${REPMGRVERSION}.tar.gz -P /usr/src/
+
+
+Extract:
+
+# tar -xf /usr/src/repmgr-${REPMGRVERSION}.tar.gz -C /usr/src/ 
+
+
+Set user and group ownwers to the following directories:
+
+# chown -R postgres: /usr/src/repmgr-${REPMGRVERSION} {/etc,/var/log}/repmgr
+
+Compilation with postgres user:
+
+# su - postgres -c \
+"cd /usr/src/repmgr-${REPMGRVERSION} && \
+make -j${NJOBS} USE_PGXS=1"
+
+Include bin directory of PostgreSQL installation, where is pg_config:
+
+# PATH="${PATH}:/usr/local/pgsql/9.5/bin"
+
+Installation:
+
+# cd /usr/src/repmgr-${REPMGRVERSION}
+
+
+diretório de pg_config no PATH ...
+
+# make -j${NJOBS} USE_PGXS=1 install
+
+# cat << EOF > /usr/lib/tmpfiles.d/repmgr.conf
+d /var/run/repmgr 0755 postgres postgres -
+EOF
+
+# systemd-tmpfiles --create
+
+# cat << EOF > /lib/systemd/system/repmgrd.service
+[Unit]
+Description=A replication manager, and failover management tool for PostgreSQL
+After=syslog.target
+After=network.target
+After=postgresql-9.5.service
+After=keepalived.service
+After=monit.service
+
+[Service]
+Type=forking
+
+User=postgres
+Group=postgres
+
+PIDFile=/var/run/repmgr/repmgrd.pid
+
+# Location of repmgr conf file:
+Environment=REPMGRDCONF=/etc/repmgr/repmgr.conf
+Environment=PIDFILE=/var/run/repmgr/repmgrd.pid
+
+# Where to send early-startup messages from the server 
+# This is normally controlled by the global default set by systemd
+# StandardOutput=syslog
+ExecStart=/usr/local/pgsql/9.5/bin/repmgrd -f \${REPMGRDCONF} -p \${PIDFILE} -d --verbose
+ExecStop=/usr/bin/kill -TERM \${MAINPID}
+ExecReload=/usr/bin/kill -HUP \${MAINPID}
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+
+# su - postgres -c "\
+cat << EOF >> \${PGCONF}/pg_hba.conf
+host    db_repmgr       repmgr_usr  192.168.56.0/27         trust
+host    replication     repmgr_usr  192.168.56.0/27         trust
+EOF
+"
+
+
+
+# vim `su - postgres -c 'echo "$PGDATA/postgresql.conf"'`
+
+listen_addresses = '*'
+shared_preload_libraries = 'repmgr_funcs'
+hot_standby = on
+wal_level = 'hot_standby'
+archive_mode = on
+archive_command = '/bin/true'
+max_wal_senders = 3
+max_replication_slots = 3
+
+
+# systemctl restart postgresql-9.5
+
+===============================================================
+
+[primary / secondaries]
+
+# yum install -y keepalived && yum clean all
+
+# systemctl enable keepalived
+
+# systemctl stop keepalived
+
+===============================================================
+
+[sr0] keepalived configuration
+
+# cat << EOF > /etc/keepalived/keepalived.conf
+global_defs {
+    router_id sr0
+}
+
+vrrp_instance pgkeepalive {
+    state MASTER
+    interface enp0s8
+    virtual_router_id 41
+    priority 150
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+
+    virtual_ipaddress {
+        192.168.56.7/27
+    }
+}
+
+EOF
+
+===============================================================
+
+[sr1]
+
+# cat << EOF > /etc/keepalived/keepalived.conf
+global_defs {
+    router_id sr1
+}
+
+vrrp_instance pgkeepalive {
+    state BACKUP
+    interface enp0s8
+    virtual_router_id 41
+    priority 140
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+
+    virtual_ipaddress {
+        192.168.56.7/27
+    }
+}
+
+EOF
+
+===============================================================
+
+[sr2]
+
+# cat << EOF > /etc/keepalived/keepalived.conf
+global_defs {
+    router_id sr2
+}
+
+vrrp_instance pgkeepalive {
+    state BACKUP
+    interface enp0s8
+    virtual_router_id 41
+    priority 130
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+
+    virtual_ipaddress {
+        192.168.56.7/27
+    }
+}
+
+EOF
+
+===============================================================
+
+[primary / secondaries]
+
+# systemctl start keepalived
+
+# ip addr show enp0s8 | fgrep 'inet ' | awk '{print $2}'
+
+
+===============================================================
+
+[all] SSH without password to root and postgres users in cluster 
+
+export NODES='sr0 sr1 sr2 wit primary'
+
+export USERS='root postgres'
+
+for USER_ in ${USERS}; do    
+
+    for NODE in ${NODES}; do
+        echo '======================================================='
+        echo "${NODE} -> ${USER_}" 
+
+        ssh -o StrictHostKeyChecking=no root@${NODE} \
+            "
+            su - ${USER_} -c \
+                \"
+                if [ ! -f ~/.ssh/id_rsa ]; then 
+                    ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa;
+                fi
+                \"
+            "
+
+        PUB_KEY=`eval echo ~${USER_}/.ssh/id_rsa.pub`
+        AUTH_KEYS=`eval echo ~${USER_}/.ssh/authorized_keys`
+        cat ${PUB_KEY} | ssh -oStrictHostKeyChecking=no root@${NODE} \
+            "cat - >> ${AUTH_KEYS}"
+        ssh root@${NODE} "chown -R ${USER_}: ~${USER_}/.ssh"
+        ssh root@${NODE} "chmod 0700 ~${USER_}/.ssh"
+        su - ${USER_} -c "ssh -o 'StrictHostKeyChecking no' ${NODE} /bin/true" 
+    done
+done
+
+
+===============================================================
+
+[primary]
+
+$ createuser -sl repmgr_usr
+
+
+$ createdb -O repmgr_usr db_repmgr
+
+
+$ psql -l
+
+                                   List of databases
+
+   Name    |   Owner    | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+------------+----------+-------------+-------------+-----------------------
+ db_repmgr | repmgr_usr | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0 | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |            |          |             |             | postgres=CTc/postgres
+ template1 | postgres   | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |            |          |             |             | postgres=CTc/postgres
+
+
+$ cat << EOF > /etc/repmgr/repmgr.conf
+cluster=teste
+node=1
+node_name=sr0
+conninfo='host=sr0.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432'
+use_replication_slots=1
+pg_bindir='`dirname \`which pg_ctl\``'
+
+# Failover settings
+
+primary_response_timeout=30
+reconnect_attempts=3
+reconnect_interval=10
+failover=automatic
+promote_command='`which repmgr` -f /etc/repmgr/repmgr.conf --verbose standby promote'
+follow_command='`which repmgr` standby follow -f /etc/repmgr/repmgr.conf'
+priority=100
+EOF
+
+$ repmgr -f /etc/repmgr/repmgr.conf --verbose primary register
+
+[2016-07-20 15:25:09] [NOTICE] using configuration file "/etc/repmgr/repmgr.conf"
+[2016-07-20 15:25:09] [WARNING] get_master_node_id(): no active primary found
+[2016-07-20 15:25:09] [NOTICE] master node correctly registered for cluster teste with id 1 (conninfo: host=sr0.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432)
+
+
+Check the replication nodes:
+
+$ psql -x -d db_repmgr -c 'SELECT * FROM repmgr_teste.repl_nodes;'
+
+-[ RECORD 1 ]----+------------------------------------------------------------------
+id               | 1
+type             | master
+upstream_node_id | 
+cluster          | teste
+name             | sr0
+conninfo         | host=sr0.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432
+slot_name        | repmgr_slot_1
+priority         | 100
+active           | t
+
+===============================================================
+
+[secondaries / witness]
+
+
+$ pg_ctl stop
+
+$ rm -fr ${PGDATA}
+
+===============================================================
+
+[secondary 1 ]
+
+$ cat << EOF > /etc/repmgr/repmgr.conf
+cluster=teste
+node=2
+node_name=sr1
+conninfo='host=sr1.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432'
+use_replication_slots=1
+pg_bindir='`dirname \`which pg_ctl\``'
+
+# Failover settings
+
+primary_response_timeout=30
+reconnect_attempts=3
+reconnect_interval=10
+failover=automatic
+promote_command='`which repmgr` -f /etc/repmgr/repmgr.conf --verbose standby promote'
+follow_command='`which repmgr` standby follow -f /etc/repmgr/repmgr.conf'
+priority=90
+EOF
+
+===============================================================
+
+[secondary 2 ]
+
+$ cat << EOF > /etc/repmgr/repmgr.conf
+cluster=teste
+node=3
+node_name=sr2
+conninfo='host=sr2.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432'
+use_replication_slots=1
+pg_bindir='`dirname \`which pg_ctl\``'
+
+# Failover settings
+
+primary_response_timeout=30
+reconnect_attempts=3
+reconnect_interval=10
+failover=automatic
+promote_command='`which repmgr` -f /etc/repmgr/repmgr.conf --verbose standby promote'
+follow_command='`which repmgr` standby follow -f /etc/repmgr/repmgr.conf'
+priority=80
+EOF
+
+===============================================================
+
+[secondaries]
+
+
+$ repmgr \
+-h primary \
+-D $PGDATA \
+-d db_repmgr \
+-U repmgr_usr \
+--verbose \
+-f /etc/repmgr/repmgr.conf \
+standby \
+clone
+
+
+$ mv ${PGDATA}/recovery.conf ${PGCONF}/
+
+$ ls ${PGCONF}/* | xargs -i ln -sf {} ${PGDATA}/
+
+$ pg_ctl start
+
+$ repmgr -f /etc/repmgr/repmgr.conf --verbose standby register
+
+===============================================================
+
+[primary]
+
+Check the replication nodes:
+
+$ psql -x -d db_repmgr -c 'SELECT * FROM repmgr_teste.repl_nodes;'
+
+-[ RECORD 1 ]----+------------------------------------------------------------------
+id               | 1
+type             | master
+upstream_node_id | 
+cluster          | teste
+name             | sr0
+conninfo         | host=sr0.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432
+slot_name        | repmgr_slot_1
+priority         | 100
+active           | t
+-[ RECORD 2 ]----+------------------------------------------------------------------
+id               | 2
+type             | standby
+upstream_node_id | 1
+cluster          | teste
+name             | sr1
+conninfo         | host=sr1.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432
+slot_name        | repmgr_slot_2
+priority         | 90
+active           | t
+-[ RECORD 3 ]----+------------------------------------------------------------------
+id               | 3
+type             | standby
+upstream_node_id | 1
+cluster          | teste
+name             | sr2
+conninfo         | host=sr2.curso.dominio user=repmgr_usr dbname=db_repmgr port=5432
+slot_name        | repmgr_slot_3
+priority         | 80
+active           | t
+
+================================================================
+
+[witness]
+
+$ cat << EOF > /etc/repmgr/repmgr.conf
+cluster=teste
+node=4
+node_name=wit
+conninfo='host=wit.curso.dominio user=repmgr_usr dbname=db_repmgr port=5499'
+use_replication_slots=1
+pg_bindir='`dirname \`which pg_ctl\``'
+EOF
+
+$ repmgr \
+--initdb-no-pwprompt \
+-d db_repmgr \
+-U repmgr_usr \
+-h primary \
+-D ${PGDATA} \
+-f /etc/repmgr/repmgr.conf \
+--verbose witness create
+
+$ ls ${PGCONF}/* | xargs -i ln -sf {} ${PGDATA}/
+
+$ sed 's/\(^#port.*\)/\1\nport = 5499/g' -i ${PGDATA}/postgresql.conf
+
+================================================================
+
+[secondaries / witness]
+
+The primary node doesn't need a repmgrd daemon:
+
+# systemctl enable repmgrd
+
+# systemctl start repmgrd
+
+================================================================
+
+[primary]
+
+$ createdb db_foo
+
+===============================================================
+
+[secondary (any)]
+
+
+$ psql -l | fgrep db_
+
+ db_foo    | postgres   | UTF8     | pt_BR.utf8 | pt_BR.utf8 | 
+ db_repmgr | repmgr_usr | UTF8     | pt_BR.utf8 | pt_BR.utf8 | 
+
+===============================================================
+
+[wit]
+
+$ psql -p 5499 -d db_repmgr -U repmgr_usr \
+-c 'SELECT id, name, type, active FROM repmgr_teste.repl_nodes;'
+
+ id | name |  type   | active 
+----+------+---------+--------
+  1 | sr0  | master  | t
+  2 | sr1  | standby | t
+  3 | sr2  | standby | t
+  4 | wit  | witness | t
+
+
+Monit Configuration
+
+# yum install -y monit && yum clean all
+
+# mkdir -p /etc/monit/scripts
+
+# cat << EOF > /etc/monit.d/kill_primary.cfg
+check host primary with address 192.168.56.7
+    if failed
+        port 5432
+        type TCP
+        timeout 30 seconds
+        for 3 cycles
+    then exec "/etc/monit/scripts/kill_primary.sh"
+
+check program test_pg with path /etc/monit/scripts/test_pg.sh as uid "postgres"
+    if status != 0
+        for 5 cycles        
+    then exec "/etc/monit/scripts/kill_primary.sh"
+EOF
+
+# cat << EOF > /etc/monit/scripts/kill_primary.sh && \
+chmod +x /etc/monit/scripts/kill_primary.sh
+#!/bin/bash
+
+ssh primary 'systemctl disable keepalived'
+ssh primary 'init 0'
+EOF
+
+
+# cat << EOF > /etc/monit/scripts/test_pg.sh && \
+chmod +x /etc/monit/scripts/test_pg.sh
+#!/bin/bash
+
+if (/usr/local/pgsql/9.5/bin/psql -U repmgr_usr -h primary -c \\
+'SELECT TRUE;' db_repmgr &> /dev/null); then
+    exit 0
+else 
+    exit 1
+fi
+EOF
+
+# systemctl start monit
+
+# systemctl enable monit
+
+================================================================
+
+Failback
+
+$ repmgr -f /etc/repmgr/repmgr.conf --force --rsync-only -h primary -d db_repmgr -U repmgr_usr --verbose standby clone
+
+$ pg_ctl start
+
+$ repmgr -f /etc/repmgr/repmgr.conf --force standby register
+
+================================================================
+
+
+
+
+The same query: 
+
+SELECT id, type, active FROM repmgr_teste.repl_nodes;
+
+On Witness:
+
+
+ id |  type   | active 
+----+---------+--------
+  4 | witness | t
+  1 | primary  | t <-
+  2 | primary  | t
+  3 | standby | t
+
+True?? 
+true even after the failover process?
+Is the witness crazy?
+Two active primarys???
+
+
+
+On new primary and remaining secondary:
+
+ id |  type   | active 
+----+---------+--------
+  4 | witness | t
+  1 | primary  | f <-
+  2 | primary  | t 
+  3 | standby | t
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+cat << EOF > changesrv.sh 
+#!/bin/bash
+
+if [ -z ${1} ]
+then
+    exit 1
+fi
+
+export IP=`getent hosts ${1} | awk '{print $1}'`
+
+sed "s/\(IPADDR=\).*/\1${IP}/g" -i /etc/sysconfig/network-scripts/ifcfg-enp0s8
+
+echo "${1}" > /etc/hostname
+
+reboot
+EOF
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ip addr show enp0s8 | fgrep 'inet ' | awk '{print $2}'
+
+
