@@ -1,0 +1,183 @@
+# https://try.redis.io/
+
+> set uf 'SP'
+
+> get uf
+
+"SP"
+
+> set servidor:hostname 'host1.dominio'
+
+> set servidor:ip '192.168.0.1'
+
+> get servidor:hostname
+
+"host1.dominio"
+
+> get servidor:ip
+
+"192.168.0.1"
+
+> set conexoes 100
+
+> set conexoes 100
+
+> incr conexoes
+
+(integer) 101
+
+> incr conexoes
+
+(integer) 101
+
+> get conexoes
+
+"102"
+
+> del conexoes
+
+> get conexoes
+
+(nil)
+
+> incr conexoes
+
+(integer) 1
+
+> incr conexoes
+
+(integer) 2
+
+> get conexoes
+
+"2"
+
+> SET resource:lock "Redis Demo"
+
+> > EXPIRE resource:lock 30
+(integer) 1
+127.0.0.1:6379> TTL resource:lock
+(integer) 20
+127.0.0.1:6379> TTL resource:lock
+(integer) 19
+127.0.0.1:6379> TTL resource:lock
+(integer) 18
+127.0.0.1:6379> get resource:lock
+"Redis Demo"
+127.0.0.1:6379> TTL resource:lock
+(integer) 9
+127.0.0.1:6379> TTL resource:lock
+(integer) 3
+127.0.0.1:6379> get resource:lock
+"Redis Demo"
+127.0.0.1:6379> TTL resource:lock
+(integer) -2
+127.0.0.1:6379> get resource:lock
+(nil)
+
+> set resource:lock 'Redis demo' EX 30
+OK
+127.0.0.1:6379> TTL resource:lock
+(integer) 7
+127.0.0.1:6379> set resource:lock 'Redis demo 2'
+OK
+127.0.0.1:6379> TTL resource:lock
+(integer) -1
+
+# TTL = -2 a chave não existe mais
+# TTL = -1 a chave não expira
+
+> RPUSH friends 'Alice'
+
+> RPUSH friends 'Bob'
+
+> LPUSH friends 'Marian'
+
+> LLEN friends
+
+(integer) 3
+
+> LRANGE friends 0 -1
+
+1) "Marian"
+2) "Alice"
+3) "Bob"
+
+> LRANGE friends 0 1
+
+1) "Marian"
+2) "Alice"
+
+> LRANGE friends 1 2
+
+1) "Alice"
+2) "Bob"
+
+> LRANGE friends 1 1
+
+1) "Alice"
+
+> RPOP friends
+
+"Bob"
+
+> LRANGE friends 0 -1
+
+1) "Marian"
+2) "Alice"
+
+> LPOP friends
+
+"Marian"
+
+
+> SADD superpoderes "voar"
+
+> SADD superpoderes "visão raio x"
+
+> SADD superpoderes "reflexos"
+
+> SMEMBERS super_poderes
+
+1) "vis\xc3\xa3o raio x"
+2) "voar"
+3) "reflexos"
+
+> SREM super_poderes 'reflexos'
+
+> SMEMBERS super_poderes
+
+1) "vis\xc3\xa3o raio x"
+2) "voar"
+
+> SISMEMBER super_poderes 'voar'
+
+(integer) 1
+
+> SISMEMBER super_poderes 'reflexos'
+
+(integer) 0
+
+> SADD poderes_de_passaros 'bicar'
+
+> SADD poderes_de_passaros 'voar'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
