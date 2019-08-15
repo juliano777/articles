@@ -1,0 +1,146 @@
+# Instalação do da extensão cstore
+
+# #
+
+yum install -y protobuf-c-devel
+
+# $ Variável de Ambiente
+
+export USE_PGXS=1
+
+# $
+cd cstore_fdw/
+
+# $
+make && make install
+
+
+# $
+wget http://examples.citusdata.com/customer_reviews_1998.csv.gz
+wget http://examples.citusdata.com/customer_reviews_1999.csv.gz
+
+gzip -d customer_reviews_1998.csv.gz
+gzip -d customer_reviews_1999.csv.gz
+
+
+
+
+# $
+psql
+
+# >
+# CREATE DATABASE db_cstore;
+
+# >
+# CREATE EXTENSION cstore_fdw;
+
+# >
+# CREATE SERVER cstore_server FOREIGN DATA WRAPPER cstore_fdw;
+
+# >
+"
+CREATE FOREIGN TABLE tb_cstore
+(
+    customer_id TEXT,
+    review_date DATE,
+    review_rating INTEGER,
+    review_votes INTEGER,
+    review_helpful_votes INTEGER,
+    product_id CHAR(10),
+    product_title TEXT,
+    product_sales_rank BIGINT,
+    product_group TEXT,
+    product_category TEXT,
+    product_subcategory TEXT,
+    similar_product_ids CHAR(10)[]
+)
+SERVER cstore_server
+OPTIONS(compression 'pglz');
+
+CREATE TABLE tb_test
+(
+    customer_id TEXT,
+    review_date DATE,
+    review_rating INTEGER,
+    review_votes INTEGER,
+    review_helpful_votes INTEGER,
+    product_id CHAR(10),
+    product_title TEXT,
+    product_sales_rank BIGINT,
+    product_group TEXT,
+    product_category TEXT,
+    product_subcategory TEXT,
+    similar_product_ids CHAR(10)[]
+);
+
+
+"
+
+# >
+"
+COPY tb_cstore FROM 'customer_reviews_1998.csv' WITH CSV;
+COPY tb_cstore FROM 'customer_reviews_1999.csv' WITH CSV;
+COPY tb_test FROM 'customer_reviews_1998.csv' WITH CSV;
+COPY tb_test FROM 'customer_reviews_1999.csv' WITH CSV;
+"
+
+# >
+"
+ANALYZE tb_cstore;
+ANALYZE tb_test;
+"
+
+# >
+"
+SELECT
+    customer_id, review_date, review_rating, product_id, product_title
+FROM
+    tb_cstore
+WHERE
+    customer_id ='A27T7HVDXA3K2A' AND
+    product_title LIKE '%Dune%' AND
+    review_date >= '1998-01-01' AND
+    review_date <= '1998-12-31';
+
+-- Do we have a correlation between a book's title's length and its review ratings?
+SELECT
+    width_bucket(length(product_title), 1, 50, 5) title_length_bucket,
+    round(avg(review_rating), 2) AS review_average,
+    count(*)
+FROM
+   tb_cstore
+WHERE
+    product_group = 'Book'
+GROUP BY
+    title_length_bucket
+ORDER BY
+    title_length_bucket;
+"
+
+
+# >
+"
+SELECT
+    customer_id, review_date, review_rating, product_id, product_title
+FROM
+    tb_test
+WHERE
+    customer_id ='A27T7HVDXA3K2A' AND
+    product_title LIKE '%Dune%' AND
+    review_date >= '1998-01-01' AND
+    review_date <= '1998-12-31';
+
+-- Do we have a correlation between a book's title's length and its review ratings?
+SELECT
+    width_bucket(length(product_title), 1, 50, 5) title_length_bucket,
+    round(avg(review_rating), 2) AS review_average,
+    count(*)
+FROM
+   tb_test
+WHERE
+    product_group = 'Book'
+GROUP BY
+    title_length_bucket
+ORDER BY
+    title_length_bucket;
+"

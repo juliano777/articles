@@ -1,0 +1,228 @@
+1- (MESTRE/ESCRAVO) Instalar o PostgreSQL:
+
+2- (MESTRE/ESCRAVO) Instalar o rsync:
+
+Debian
+
+# aptitude install rsync
+
+RedHat
+
+# yum install rsync
+
+2- (MESTRE/ESCRAVO) Crie o cluster de banco de dados como o initdb;
+
+3- (MESTRE/ESCRAVO) Configurar o endereço de escuta do serviço no arquivo postgresql.conf, cujo parâmetro é listen_addresses;
+
+4- (MESTRE/ESCRAVO) Configure a comunicação SSH sem senha entre os servidores;
+
+5- (MESTRE/ESCRAVO) Criar diretório de configurações:
+
+$ mkdir /srv/postgresql/conf
+
+6- (MESTRE/ESCRAVO) Mover os arquivos de configuração para o diretório recém criado para esse fim:
+
+$ mv $PGDATA/*.conf /srv/postgresql/conf
+
+7- (ESCRAVO) Criar diretório de log shipping:
+
+$ mkdir /srv/postgresql/bkp/xlog
+
+8- (ESCRAVO) Parar o serviço do Postgres e remover o diretório $PGDATA
+
+$ pg_ctl stop
+
+$ rm -fr $PGDATA/*
+
+9- (ESCRAVO) O arquivo postgresql.conf em /srv/postgresql/conf/ deve ter o parâmetro "hot_standby" habilitado para permitir consultas:
+
+hot_standby = on
+
+10- (MESTRE) Configurar a autenticação no arquivo pg_hba.conf:
+
+host  replication  postgres  IP_ESCRAVO/32  trust
+
+11- (MESTRE) Configurar parâmetros relativos à streaming replication no arquivo postgresql.conf:
+
+wal_level = hot_standby
+max_wal_senders = 1
+wal_keep_segments = 32
+archive_mode    = on
+archive_command = 'rsync -az %p IP_ESCRAVO:/srv/postgresql/bkp/xlog/%f'
+
+12- (ESCRAVO) Criar no $PGDATA um link para cada arquivo de configuração:
+
+$ PGCONF=$(ls /srv/postgresql/conf/)
+
+
+
+13 -(MESTRE) Inicialize o serviço do PostgreSQL:
+
+$ pg_ctl start
+
+14 -(MESTRE/ESCRAVO) Criar o arquivo exclude.txt em /srv/postgresql/conf/:
+
+$ touch /srv/postgresql/conf/exclude.txt
+
+Conteúdo:
+
+postgresql.conf
+pg_hba.conf
+pg_ident.conf
+postmaster.pid
+
+
+15- Sincronização dos dados
+
+a)(ESCRAVO)  (Se versão >= 9.1)
+
+$ pg_basebackup -h IP_MESTRE -Fp -x -l label_de_backup -P -D $PGDATA
+
+
+
+
+b)(MESTRE) (Se versão = 9.0)
+
+$ psql -c "SELECT pg_start_backup('label', true)"
+$ rsync -av ${PGDATA}/ IP_ESCRAVO:${PGDATA}/ --exclude-from  /srv/postgresql/conf/exclude.txt
+$ psql -c 'SELECT pg_stop_backup()'
+
+
+16- (ESCRAVO) /srv/postgresql/conf/recovery.conf
+
+standby_mode              = 'on'
+primary_conninfo          = 'host=IP_MESTRE port=5432 user=postgres'
+trigger_file         = '/tmp/pgsql.trigger'
+restore_command     = 'cp /srv/postgresql/bkp/xlog/%f "%p"'
+
+
+$ ls ${PGCONF}/* | xargs -i ln -sf {} ${PGDATA}/
+
+
+17- (ESCRAVO) Criar no $PGDATA um link para cada arquivo de configuração:
+
+$ for i in $(ls /srv/postgresql/conf/); do ln -sf /srv/postgresql/conf/$i /srv/postgresql/data/$i; done
+
+18- (ESCRAVO) Inicialize o serviço do PostgreSQL:
+
+$ pg_ctl start
+
+19- Testando
+
+(MESTRE)
+
+SELECT pg_is_in_recovery();
+ pg_is_in_recovery
+-------------------
+ f
+(1 row)
+
+(ESCRAVO)
+
+SELECT pg_is_in_recovery();
+ pg_is_in_recovery
+-------------------
+ t
+(1 row)
+
+
+
+
+========================================== SE O NÓ ESCRAVO CAIR ==================================================
+
+1- (MESTRE) Sincronizar os arquivos do MESTRE para o ESCRAVO:
+
+$ psql -c "SELECT pg_start_backup('label', true)"
+$ rsync -av ${PGDATA}/ IP_ESCRAVO:${PGDATA}/ --exclude-from  /srv/postgresql/conf/exclude.txt
+$ psql -c 'SELECT pg_stop_backup()'
+
+2- (ESCRAVO) Inicializar o serviço do PostgreSQL
+
+# /etc/init.d/postgres-9.1-openscg start
+
+========================================== SE O NÓ MESTRE CAIR (Failback) ========================================
+
+1- (ESCRAVO) Com o MESTRE parado execute:
+
+$ psql -c "SELECT pg_start_backup('label', true)"
+$ rsync -av ${PGDATA}/ IP_MASTER:${PGDATA}/ --exclude-from  /srv/postgresql/conf/exclude.txt
+$ psql -c 'SELECT pg_stop_backup()'
+
+2- (ESCRAVO) Pare o serviço do PostgreSQL, renomeie o arquivo recovery.done para recovery.conf e remova o arquivo de gatilho:
+
+# /etc/init.d/postgres-9.1-openscg stop
+# mv /srv/postgresql/conf/recovery.done /srv/postgresql/conf/recovery.conf
+# rm /tmp/pgsql.trigger
+
+
+3- (MESTRE) Inicialize o serviço do PostgreSQL:
+
+# /etc/init.d/postgres-9.1-openscg start
+
+3- (MESTRE) Sincronização dos dados
+
+$ psql -c "SELECT pg_start_backup('label', true)"
+$ rsync -av ${PGDATA}/ IP_ESCRAVO:${PGDATA}/ --exclude-from  /srv/postgresql/conf/exclude.txt
+$ psql -c 'SELECT pg_stop_backup()'
+
+4- (ESCRAVO) Inicialize o serviço do PostgreSQL:
+
+# /etc/init.d/postgres-9.1-openscg start
+
+
+===================================================================================================================
+
+
+host     all     all     127.0.0.1/32 ldap ldapserver=127.0.0.1 ldapprefix="uid=" ldapsuffix=", ou=People, dc=my-domain, dc=com"
+
+===================================================================================================================
+
+Apostila a fazer:
+
+- EXISTS
+- pg_hba.conf com LDAP
+host     all     all     127.0.0.1/32 ldap ldapserver=127.0.0.1 ldapprefix="uid=" ldapsuffix=", ou=People, dc=my-domain, dc=com"
+
+-
+
+===================================================================================================================
+
+Gerando senha md5 para o pgbouncer
+
+select 'md5' || md5 ('minha senha' || 'postgres');
+
+===================================================================================================================
+
+
+
+Sim. Isso acontece porque uma tupla necessária para a leitura da sua
+consulta no escravo foi limpa pelo (auto)vacuum do mestre.
+O mestre não tem como saber se uma página ainda é necessária para o
+escravo, então, ele limpa "cegamente" e isso é totalmente replicado.
+
+Você tem algumas alternativas:
+
+1) No escravo, aumentar o valor de max_standby_streaming_delay. O
+padrão é 30 segundos.
+O PostgreSQL escravo faz então uma "pausa" na aplicação da replicação
+até que sua consulta termine. Esse tempo pode ser aumentado. Você pode
+colocar o valor 0 (zero) para que nenhuma consulta seja cancelada, mas
+uma consulta muito demorada pode pausar a aplicação da replicação e os
+dados lidos por outras consultas podem se tornar muito antigos. Se sua
+aplicação tolera isso, sem problemas, por exemplo, se você só faz
+consultas para alimentar um BI nesse escravo.
+
+2) No mestre, configurar o valor de vacuum_defer_cleanup_age. Este
+valor padrão é zero, ou seja, após uma tupla ser "inútil" para o
+mestre, ela será limpa assim que o (auto)vacuum quiser. O valor aqui é
+em transações. Você pode colocar um valor alto de transações (que você
+precisa medir pra saber quantas) e então a rotina de limpeza "espera"
+que esse número de transações passe para fazer a limpeza e replicá-la.
+Nesta estratégia, haverá um aumento de consumo de de espaço em disco
+tanto do mestre como do escravo, pois páginas que poderia já estar
+limpas ficarão disponíveis por mais tempo em disco. As consultas no
+escravo terão então um tempo maior de validade de tuplas disponíveis e
+mais dificilmente serão canceladas.
+
+
+SELECT * from  pg_settings where name = 'archive_timeout';

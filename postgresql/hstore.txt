@@ -1,0 +1,76 @@
+CREATE TABLE produto ( 
+      id serial PRIMARY KEY,         
+      nome varchar, 
+      descricao hstore 
+    );
+
+create table fabricante (
+id serial primary key,
+nome varchar,
+pais varchar);
+
+
+
+
+INSERT INTO produto (nome, descricao) VALUES (
+	'The Bourne Sanction',
+	$$autor => "Robert Ludlum's", 
+	paginas => 688,
+	categoria => ficção,
+	dispositivo => kindle,
+	formato => ebook$$);
+
+ou
+
+
+INSERT INTO produto (nome, descricao) VALUES (
+	'The Bourne Sanction',
+	'autor => "Robert Ludlum''s", 
+	paginas => 688,
+	categoria => ficção,
+	dispositivo => kindle,
+	formato => ebook');
+
+
+INSERT INTO produto (nome, descricao) 
+     VALUES (                          
+       'Leica M9', 
+       'fabricante  => Leica, 
+        tipo          => camera, 
+        megapixels    => 18, 
+        sensor        => "full-frame 35mm"' 
+     ), 
+     ( 'MacBook Air 11', 
+       'fabricante  => Apple, 
+        tipo          => computer, 
+        memoria_ram           => 4GB, 
+        armazenamento_hd       => 256GB, 
+        processador     => "1.8 ghz Intel i7 core duo", 
+        peso        => 1kg' 
+     );
+
+
+Consultar por valor de campo:
+
+SELECT nome, descricao->'dispositivo' as dispositivo 
+    FROM produto 
+    WHERE descricao ->'formato' = 'ebook';
+
+Consultar por nome de chave:
+
+SELECT nome, descricao -> 'paginas' 
+    FROM produto 
+    WHERE descricao ? 'paginas';
+
+create index idx_produto_fabricante
+on produto ((descricao -> 'fabricante'));
+
+SELECT fabricante.pais, produto.nome 
+    FROM produto, fabricante 
+    WHERE produto.descricao -> 'fabricante' = fabricante.nome;
+
+
+
+
+
+

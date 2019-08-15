@@ -1,0 +1,118 @@
+Instalação
+==========
+
+Ambos
+-----
+
+Instalação do repositório da 2ndQuadrant:
+
+# yum install http://packages.2ndquadrant.com/pglogical/yum-repo-rpms/pglogical-rhel-1.0-3.noarch.rpm
+
+
+
+Instalação do pacote pglogical para PostgreSQL 10:
+
+# yum install -y postgresql10-pglogical
+
+
+
+Configuração
+============
+
+Ambos
+-----
+
+postgresql.conf:
+
+wal_level = 'logical'
+max_worker_processes = 10   # one per database needed on provider node
+                            # one per node needed on subscriber node
+max_replication_slots = 10  # one per node needed on provider node
+max_wal_senders = 10        # one per node needed on provider node
+shared_preload_libraries = 'pglogical'
+track_commit_timestamp = on
+
+
+
+Criar a base de testes:
+
+> CREATE DATABASE db_teste;
+
+
+
+Conecte à base criada:
+
+> \c db_teste
+
+
+
+Habilitar a extensão na base de dados a ser replicada:
+
+> CREATE EXTENSION pglogical;
+
+
+
+Tabela para teste:
+
+> CREATE TABLE tb_cidade (
+    id serial primary key,
+    uf char(2) not null,
+    nome varchar(50));
+
+
+
+Provider
+--------
+
+
+
+
+qwqwqw:
+
+> SELECT pglogical.create_node(
+    node_name := 'pg1',
+    dsn := 'host=pg1.local port=5432 dbname=db_local'
+);
+
+
+
+Add all tables in public schema to the default replication set:
+
+> SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
+
+
+
+Subscriber
+--------
+
+Once the provider node is setup, subscribers can be subscribed to it. First the subscriber node must be created:
+
+> SELECT pglogical.create_node(
+    node_name := 'pg2',
+    dsn := 'host=pg2.local port=5432 dbname=db_teste user=postgres password=123'
+);
+
+
+
+
+And finally on the subscriber node you can create the subscription which will start synchronization and replication process in the background:
+
+SELECT pglogical.create_subscription(
+    subscription_name := 'subscription1',
+    provider_dsn := 'host=pg1.local port=5432 dbname=db_teste user=postgres password=123'
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

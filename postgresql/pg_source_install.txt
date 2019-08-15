@@ -1,0 +1,97 @@
+
+Environment variable (PGVERSIONXYZ) for minor version number:
+
+# read -p 'Digite o número de versão completo (X.Y.Z) do PostgreSQL a ser baixado: ' PGVERSIONXYZ
+
+
+Environment variable (PGVERSION) for major version number:
+
+# export PGVERSION=`echo ${PGVERSIONXYZ} | cut -f1-2 -d.`
+
+
+System group creation:
+
+# groupadd -r postgres
+
+
+System user creation:
+
+# useradd -s /bin/bash -k /etc/skel -d /var/lib/pgsql -g postgres -m -r postgres
+
+
+# cat << EOF >> ~postgres/.profile
+
+# Environment Variables
+
+export PGVERSION='${PGVERSION}'
+export LD_LIBRARY_PATH="/usr/local/pgsql/\${PGVERSION}/lib:\${LD_LIBRARY_PATH}" 
+export MANPATH="/usr/local/pgsql/\${PGVERSION}/share/man:\${MANPATH}"
+export PATH="/usr/local/pgsql/\${PGVERSION}/bin:\${HOME}/bin:\${PATH}"
+export PGDATA="/var/lib/pgsql/\${PGVERSION}/main"
+export PGCONF="/etc/pgsql/\${PGVERSION}/main"
+export PGVERSIONXYZ='${PGVERSIONXYZ}'
+EOF
+
+
+
+# mkdir -p /etc/pgsql/${PGVERSION}/main {/var/log,/usr/local}/pgsql /var/lib/pgsql/${PGVERSION}/main
+
+# chown -R postgres: /etc/pgsql/${PGVERSION}/main /var/log/pgsql /var/lib/pgsql/${PGVERSION}/main
+
+# ln -sf /etc/pgsql /etc/postgresql
+
+
+# ln -sf /var/log/pgsql /var/log/postgresql
+
+
+# ln -sf /var/lib/pgsql /var/lib/postgresql
+
+
+# ln -sf /usr/local/pgsql /usr/local/postgresql
+
+
+# aptitude -y install chkconfig bison bzip2 gcc flex gettext make {libreadline,libssl,python,zlib1g,libxml2,libldap2}-dev
+
+# aptitude clean
+
+# wget -c https://ftp.postgresql.org/pub/source/v${PGVERSIONXYZ}/postgresql-${PGVERSIONXYZ}.tar.bz2 -P /usr/src/
+
+# tar xf /usr/src/postgresql-${PGVERSIONXYZ}.tar.bz2 -C /usr/src/
+
+# cd /usr/src/postgresql-${PGVERSIONXYZ}
+
+# export CPPFLAGS="-DLINUX_OOM_SCORE_ADJ=0"
+
+# export NJOBS=`expr \`cat /proc/cpuinfo | egrep ^processor | wc -l\` + 1`
+
+# ./configure \
+--prefix=/usr/local/pgsql/${PGVERSION} \
+--with-python \
+--with-libxml \
+--with-openssl \
+--with-ldap \
+--mandir=/usr/local/pgsql/${PGVERSION}/man \
+--docdir=/usr/local/pgsql/${PGVERSION}/doc
+
+# make -j${NJOBS} world
+
+# make -j${NJOBS} install-world
+
+# vim /etc/init.d/postgresql-${PGVERSION}
+
+# chmod +x /etc/init.d/postgresql-${PGVERSION}
+
+# chkconfig --add postgresql-${PGVERSION}
+
+# sed "s/PGVERSION=/PGVERSION='${PGVERSION}'/g" -i /etc/init.d/postgresql-${PGVERSION}
+
+# service postgresql-${PGVERSION} initdb
+
+# su - postgres
+
+$ mv ${PGDATA}/*.conf ${PGCONF}/
+
+$ ls ${PGCONF}/* | xargs -i ln -sf {} ${PGDATA}/
+
+$ pg_ctl start
+

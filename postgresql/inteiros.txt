@@ -1,0 +1,121 @@
+CREATE TEMP TABLE tb_source(
+    campo int2);
+
+CREATE TABLE tb_int2(
+    campo int2);
+
+CREATE TABLE tb_int4(
+    campo int4);
+
+CREATE TABLE tb_int8(
+    campo int8);
+
+
+WITH t AS (
+    SELECT generate_series(1, 7000000), round(random() * 32767) campo
+)
+INSERT INTO tb_source (campo) SELECT campo FROM t;
+
+
+\timing on
+
+
+INSERT INTO tb_int2 (campo) SELECT campo FROM tb_source;
+18559,282 ms
+
+INSERT INTO tb_int4 (campo) SELECT campo FROM tb_source;
+7120,530 ms
+
+INSERT INTO tb_int8 (campo) SELECT campo FROM tb_source;
+7864,016 ms
+
+
+
+
+
+SELECT pg_size_pretty(pg_relation_size('tb_int2'));
+
+ pg_size_pretty 
+----------------
+ 92 MB
+
+
+SELECT pg_size_pretty(pg_relation_size('tb_int4'));
+
+ pg_size_pretty 
+----------------
+ 92 MB
+
+
+SELECT pg_size_pretty(pg_relation_size('tb_int8'));
+
+ pg_size_pretty 
+----------------
+ 104 MB
+
+
+SELECT pg_size_pretty(sum(pg_column_size(campo))) FROM tb_int2;
+
+ pg_size_pretty 
+----------------
+ 5859 kB
+
+
+SELECT pg_size_pretty(sum(pg_column_size(campo))) FROM tb_int4;
+
+ pg_size_pretty 
+----------------
+ 11 MB
+
+
+SELECT pg_size_pretty(sum(pg_column_size(campo))) FROM tb_int8;
+
+ pg_size_pretty 
+----------------
+ 23 MB
+
+
+EXPLAIN ANALYZE SELECT campo FROM tb_int2 WHERE campo % 19 = 0;
+
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Seq Scan on tb_int2  (cost=0.00..64265.00 rows=15000 width=2) (actual time=0.037..526.750 rows=157851 loops=1)
+   Filter: (((campo)::integer % 19) = 0)
+   Rows Removed by Filter: 2842149
+ Planning time: 0.057 ms
+ Execution time: 545.285 ms
+
+
+
+EXPLAIN ANALYZE SELECT campo FROM tb_int4 WHERE campo % 19 = 0;
+
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Seq Scan on tb_int4  (cost=0.00..56765.00 rows=15000 width=4) (actual time=0.043..427.114 rows=157851 loops=1)
+   Filter: ((campo % 19) = 0)
+   Rows Removed by Filter: 2842149
+ Planning time: 0.055 ms
+ Execution time: 445.840 ms
+
+EXPLAIN ANALYZE SELECT campo FROM tb_int8 WHERE campo % 19 = 0;
+                                                   QUERY PLAN                                                   
+----------------------------------------------------------------------------------------------------------------
+ Seq Scan on tb_int8  (cost=0.00..58275.00 rows=15000 width=8) (actual time=0.024..504.894 rows=157851 loops=1)
+   Filter: ((campo % '19'::bigint) = 0)
+   Rows Removed by Filter: 2842149
+ Planning time: 0.100 ms
+ Execution time: 523.230 ms
+
+
+CREATE INDEX idx_int2 ON tb_int2 (campo);
+3850,850 ms
+
+CREATE INDEX idx_int4 ON tb_int4 (campo);
+3875,969 ms
+
+CREATE INDEX idx_int8 ON tb_int8 (campo);
+6004,552 ms
+
+
+
+
