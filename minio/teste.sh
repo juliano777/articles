@@ -106,13 +106,10 @@ SuccessExitStatus=0
 WantedBy=multi-user.target
 EOF
 
-# Habilitando o serviço na inicialização
+# Habilitando e iniciando o serviço na inicialização
 
-systemctl enable minio
+systemctl enable --now minio
 
-# Iniciar o serviço
-
-systemctl start minio
 
 # 
 # CONFIGURAÇÃO TLS1
