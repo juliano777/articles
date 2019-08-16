@@ -173,6 +173,18 @@ sed "s:\(MINIO_SECRET_KEY=.*\):\1\nMINIO_DOMAIN=${MINIO_DOMAIN}:g" \
 
 sed 's:\(export.*\):\1 MINIO_DOMAIN:g' -i /etc/default/minio 
 
+read -p 'Quantos nós terá o cluster? ' N_NODES
+
+unset MINIO_VOLUMES
+
+for i in `seq 1 ${N_NODES}`;
+do
+    read -p "Digite o node ${1} no formato: \
+<http ou https>://<hostname ou IP>:<porta>/<storage> " MINIO_VOLUMES[$((i-1))]
+done
+
+export MINIO_VOLUMES="${MINIO_VOLUMES[@]}"
+
 
 
 
