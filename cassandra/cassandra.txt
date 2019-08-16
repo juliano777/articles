@@ -1,0 +1,443 @@
+Apache Cassandra em CentOS - Instalação, Configuração e Replicação
+
+Este artigo tem por fim ensinar a instalação do Apache Cassandra seguindo boas práticas em servidores Linux além de também fazer configuração para trabalhar em cluster.
+Este artigo é uma versão em português do artigo publicado na DigitalOcean, por Hazel Virdó (https://www.digitalocean.com/community/users/hazelnut), cujo link é https://www.digitalocean.com/community/tutorials/how-to-run-a-multi-node-cluster-database-with-cassandra-on-ubuntu-14-04.
+
+=============================================================================================================================================
+
+Instalação do Java
+
+Esta é a parte chata deste tutorial...
+Chata porque a Oracle disponibiliza seus downlods Java em forma de links dinâmicos, o que nos impossibilita de automatizar via scripts :(
+O Cassandra é feito em Java e por isso é necessário configurar o ambiente java com a JVM.
+
+
+Antes de mais nada vamos fazer o download do JRE no link:
+
+http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+Terão 3 (três) opções de download: JDK, Server JRE e JRE.
+Escolha para baixar a opção JRE.
+
+Baixe o arquivo .tar.gz para Linux de 64 bits (Linux x64), por exemplo: jre-8u144-linux-x64.tar.gz
+
+Envie o arquivo para o servidor via SSH para o diretório /tmp.
+Usuários Windows podem usar o aplicativo WinSCP (https://winscp.net/eng/download.php).
+
+# Após enviar o arquivo para o servidor, acesse-o via SSH e descompacte o arquivo para o diretório /usr/local:
+
+
+tar xvf /tmp/jre-8u144-linux-x64.tar.gz -C /usr/local/
+
+O resultado da compactação será um diretório com o nome como este:
+
+/usr/local/jre1.8.0_144
+
+
+
+# Renomeie o diretório para /usr/local/jdk para ficar um nome mais amigável:
+
+
+mv /usr/local/jre1.8.0_144 /usr/local/jre
+
+
+=============================================================================================================================================
+
+Download e Instalação do Cassandra
+
+
+
+# Criação do grupo do usuário de sistema para o Cassandra:
+
+groupadd -r cassandra
+
+
+
+# Criação do usuário de sistema para o Cassandra:
+
+
+useradd -r -m \
+-d /var/lib/cassandra \
+-s /bin/bash \
+-k /etc/skel \
+-g cassandra \
+-c 'Cassandra DB - System User' cassandra
+
+
+
+
+# Baixar o Apache Cassandra para o diretório /tmp:
+
+
+wget -c http://ftp.unicamp.br/pub/apache/cassandra/3.11.0/\
+apache-cassandra-3.11.0-bin.tar.gz -P /tmp/
+
+
+
+# Descompactar o arquivo baixado para /usr/local:
+
+
+tar xf /tmp/apache-cassandra-3.11.0-bin.tar.gz -C /usr/local/
+
+
+
+# Renomear o diretório para um nome mais amigável:
+
+
+mv /usr/local/apache-cassandra-3.11.0 /usr/local/cassandra
+
+
+
+# Eliminar arquivos que não serão utilizados:
+
+
+rm -f /usr/local/cassandra/{conf,bin}/*.{bat,ps1} \
+/usr/local/cassandra/bin/stop-server
+
+
+
+# Criação do diretório onde ficará o arquivo de PID:
+
+
+mkdir /var/lib/cassandra/run
+
+
+
+# Mover o diretório de configuração para /var/lib/cassandra:
+
+
+mv /usr/local/cassandra/conf /var/lib/cassandra/
+
+
+
+# Criar link simbólico em /usr/local/cassandra:
+
+
+ln -s /var/lib/cassandra/conf /usr/local/cassandra/
+
+
+
+# Criação do arquivo de variáveis de ambiente:
+
+
+cat << EOF > /usr/local/cassandra/conf/env_vars
+
+export JAVA_HOME='/usr/local/jre'
+export JRE_HOME="\${JAVA_HOME}"
+export CASSANDRA_HOME='/usr/local/cassandra'
+export PATH="\${PATH}:\${CASSANDRA_HOME}/bin:\${JRE_HOME}/bin"
+export PIDFILE='/var/lib/cassandra/run/cassandra.pid'
+EOF
+
+
+
+# Fazer com que o usuário do Cassandra leia as variáveis de ambiente ao logar:
+
+
+echo 'source /usr/local/cassandra/conf/env_vars' >> ~cassandra/.bashrc
+
+
+
+
+# Criação do script que inicia o serviço do Cassandra:
+
+
+cat << EOF > /usr/local/cassandra/bin/start_cassandra
+#!/bin/bash
+source /usr/local/cassandra/conf/env_vars
+cassandra -p \${PIDFILE}
+EOF
+
+
+
+# Criação do script que pára o serviço do Cassandra:
+
+
+cat << EOF > /usr/local/cassandra/bin/stop_cassandra
+#!/bin/bash
+source /usr/local/cassandra/conf/env_vars
+kill \`cat \${PIDFILE}\`
+EOF
+
+
+
+# Tornar os scripts de inicialização e parada como executáveis:
+
+
+chmod 755 /usr/local/cassandra/bin/st{art,op}_cassandra
+
+
+
+# Dar propriedade ao usuário e grupo do Cassandra em seu diretório home:
+
+
+chown -R cassandra: ~cassandra
+
+
+
+# Criação do arquivo Unit File do SystemD para o serviço do Cassandra:
+
+
+cat << EOF > /usr/lib/systemd/system/cassandra.service
+[Unit]
+Description=Apache Cassandra Database
+After=network.target
+
+[Service]
+Type=forking
+User=cassandra
+Group=cassandra
+ExecStart=/usr/local/cassandra/bin/start_cassandra
+ExecStop=/usr/local/cassandra/bin/stop_cassandra
+ExecRestart=/usr/local/cassandra/bin/stop_cassandra && /usr/local/cassandra/bin/start_cassandra
+StandardOutput=journal
+StandardError=journal
+LimitNOFILE=100000
+LimitMEMLOCK=infinity
+LimitNPROC=32768
+LimitAS=infinity
+Restart=always
+TimeoutSec=300
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+
+# Habilitar o serviço do Cassandra na inicialização:
+
+
+systemctl enable cassandra.service
+
+
+=============================================================================================================================================
+
+Configuração do Cassandra
+
+A configuração do Cassandra é feita principalmente no arquivo cassandra.yaml, que como a própria extensão do arquivo denota, é um arquivo YAML.
+O arquivo principal tem como caminho completo ${CASSANDRA_HOME}/conf/cassandra.yaml.
+
+Seguem abaixo algumas configurações que mudaremos, com sua explicação e seus valores.
+Essas mudanças podem ser feitas manualmente editando o arquivo ou automaticamente com os procedimentos que seguem as explicações dos parâmetros abaixo:
+
+cluster_name: <nome do cluster>
+
+O nome do cluster que os nós participarão.
+
+-seeds: "<ip_servidor1>, <ip_servidor2>, <ip_servidor3>, ..."
+
+Uma lista em que seus elementos são IPs dos servidores (nós) que participarão do cluster.
+
+listen_address: <IP do servidor>
+
+IP do servidor Cassandra que será usado para se conectarem ao serviço.
+
+rpc_address: <IP do servidor>
+IP para chamadas de de procedimentos remotos.
+
+
+endpoint_snitch: GossipingPropertyFileSnitch
+
+Nome do "dedo duro" / "delatador", que é o que diz ao Cassandra sobre o que a rede parece.
+O padrão é SimpleSnitch que é usado em um datacenter.
+Em nosso caso o valor será GossipingPropertyFileSnitch, que é preferido para configurações em produção.
+
+auto_bootstrap: false
+
+Este parâmetro não está no arquivo de configuração, então ele deve ser adicionado e configurado como false.
+Isso faz com que novos nós usem os dados corretos.
+É opcional se desejar adicionar nós para um cluster já existente, mas necessário quando está configurando um novo cluster, o qual não tem dados.
+
+hints_directory: /var/lib/cassandra/hints
+
+Parâmetro comentado por padrão.
+Diretório onde o Cassandra deve armazenar hints.
+
+commitlog: /var/lib/cassandra/commitlog
+
+Parâmetro comentado por padrão.
+Diretório de logs de efetivação.
+
+cdc_raw: /var/lib/cassandra/cdc_raw
+
+Parâmetro comentado por padrão.
+CommitLogSegments são movidos para este diretório quando é dado um flush.
+
+saved_caches_directory: /var/lib/cassandra/cdc_raw
+
+Parâmetro comentado por padrão.
+Diretório que armazena chaches salvos.
+
+data_file_directories: - /var/lib/cassandra/data
+
+Parâmetro comentado por padrão.
+Diretórios onde o Cassandra deve armazenar dados em disco.
+
+=============================================================================================================================================
+
+Configuração Automatizada
+
+Seguem abaixo procedimentos via Shell Script para não precisarmos editar manualmente o arquivo de configuração.
+
+
+
+# Criação de uma variável de ambiente que aponta para o arquivo de configuração:
+
+
+export C_CONF='/var/lib/cassandra/conf/cassandra.yaml'
+
+
+
+# Digite o valor para o nome do cluster:
+
+
+read -p 'Digite um valor para cluster_name: ' CLUSTER_NAME
+
+
+
+# Digite o IP do servidor:
+
+
+read -p 'Digite o IP onde o serviço irá escutar: ' C_IP
+
+
+
+# Digite os IPS dos nós do cluster (separados por vírgula), por exemplo; 192.168.56.2, 192.168.56.3, 192.168.56.4:
+
+
+read -p 'Digite os IPS dos nós do cluster (separados por vírgula): ' CLUSTER_IPS
+
+
+# Alterações do arquivo de configuração via sed:
+
+
+sed -i '1i auto_bootstrap: false' ${C_CONF}
+sed "s/^\(cluster_name:\) .*/\1 '${CLUSTER_NAME}'/g" -i ${C_CONF}  
+sed "s/\(- seeds: \"\).*/\1${CLUSTER_IPS}\"/g" -i ${C_CONF}
+sed "s/^\(\(listen\|rpc\)_address: \).*/\1${C_IP}/g" -i ${C_CONF}
+sed 's/^\(endpoint_snitch: \).*/\1GossipingPropertyFileSnitch/g' -i ${C_CONF}
+sed "s/^# \(\(hints\|commitlog\|cdc_raw\|saved_caches\)_directory.*\)/\1/g" -i ${C_CONF}
+sed "s/^# \(data_file_directories:\)/\1/g" -i -i ${C_CONF}
+sed "s:^# \(    - /var/lib/cassandra/data\):\1:g" -i -i ${C_CONF}
+
+
+
+# Iniciar o serviço do Cassandra:
+
+
+systemctl start cassandra.service
+
+
+
+# O serviço do Cassandra pode demorar... Enquanto isso rode os comandos abaixo e vá buscar um café e aguarde a mensagem avisando que o servidor está pronto:
+
+
+while :; do
+    if (netstat -nltp | fgrep ${C_IP}:9042); then
+        clear
+        echo '#==========================================#'
+        echo -e "Serviço do Cassandra pronto! \n"
+        echo 'Para testar utilize o usuário cassandra:'
+        echo -e "su - cassandra\n"
+        echo 'Teste com o comando:'
+        echo "cqlsh ${C_IP} 9042"
+        echo -e "#==========================================#\n"
+        break
+    fi
+   
+    echo 'Cassandra inicializando...'
+    echo 'Aguarde...'
+    sleep 1
+    clear
+done
+
+
+Mensagem:
+
+#==========================================#
+Serviço do Cassandra pronto! 
+
+Para testar utilize o usuário cassandra:
+su - cassandra
+
+Teste com o comando:
+cqlsh 192.168.56.2 9042
+#==========================================#
+
+
+=============================================================================================================================================
+
+Testando o Cassandra
+
+Após a mensagem de sucesso avisar que o serviço está pronto podemos começar a testar nosso servidor :)
+
+
+# Tornar-se o usuário do Cassandra:
+
+
+su - cassandra
+
+
+
+$ Usar o aplicativo cliente de modo texto para nos conectarmos ao Cassandra:
+
+
+cqlsh <IP do servidor> 9042
+
+
+
+> Criar um KeySpace de teste:
+
+
+CREATE KEYSPACE ks_teste
+    WITH replication = {'class':'SimpleStrategy',
+                        'replication_factor' : 3};
+
+
+=============================================================================================================================================
+
+
+Replicação
+
+Para a replicação, em cada nó que participará do clusterfaça os procedimentos descritos antes de "Testando o Cassandra".
+Vale lembrar que listen_address e rpc_address é o IP do servidor do nó que está configurando.
+
+
+
+$ A partir da configuração do segundo nó vamos verificar o status do cluster:
+
+
+nodetool status
+
+
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address       Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  192.168.56.2  263.31 KiB  256          100.0%            05602395-66bc-45b2-a84c-802601b3f2a4  rack1
+UN  192.168.56.3  106.4 KiB  256          100.0%            93bf7fef-5dc4-4109-908a-9d123961dc8a  rack1
+
+
+
+$ No segundo nó se conecte ao Cassandra:
+
+
+cqlsh <IP do servidor> 9042
+
+
+
+> Verifique se existe o KeySpace criado no primeiro nó:
+
+
+DESC KEYSPACE ks_teste;
+
+Mensagem:
+
+CREATE KEYSPACE ks_teste WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3'}  AND durable_writes = true;
+
+
+Replicação funcionando! :)
+
+Os procedimentos aqui valem para adição de mais nós ao cluster.

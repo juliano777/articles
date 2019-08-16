@@ -156,5 +156,23 @@ openssl \
     -out ~/.minio/certs/public.crt\
     -config ~/.minio/openssl.conf'
 
+# ============================================================================
+# Distribuído
+# ============================================================================
+
+# Domínio:
+
+read -p 'Domínio: ' MINIO_DOMAIN
+
+
+
+sed "s:\(MINIO_SECRET_KEY=.*\):\1\nMINIO_DOMAIN=${MINIO_DOMAIN}:g" \
+    -i /etc/default/minio 
+
+
+
+sed 's:\(export.*\):\1 MINIO_DOMAIN:g' -i /etc/default/minio 
+
+
 
 
