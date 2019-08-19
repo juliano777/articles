@@ -187,8 +187,4 @@ export MINIO_VOLUMES="${MINIO_VOLUMES[@]}"
 
 sed "s|MINIO_VOLUMES=.*|MINIO_VOLUMES='${MINIO_VOLUMES}'|g" -i /etc/default/minio
 
-rm -fr /var/local/minio/data/{.[a-z,A-Z,_],*}
-
-
-
-
+cd /var/local/minio/data; ls -A1 | xargs rm -rvf
