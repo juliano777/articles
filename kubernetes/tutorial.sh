@@ -155,6 +155,12 @@ su - ${DOCKER_USER} -c 'mkdir ~/.kube'
 
 
 
+# Enable kubectl auto completion (needs bash-completion pre installed):
+
+echo 'source <(kubectl completion bash)' >> /etc/profile.d/kubectl.sh
+
+
+
 
 # ===== Cluster Configuration ================================================
 
