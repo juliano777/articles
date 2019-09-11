@@ -128,13 +128,28 @@ EOF
 
 
 
+# Type your network CIDR (X.X.X.X/X):
+
+read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
+
+
+
+# kubeadm init initialize the config.yaml configuration file:
+
+kubeadm init \
+  --pod-network-cidr=${NET_CIDR} \
+  --ignore-preflight-errors=Swap \
+  --node-name `hostname -s`
+
+
+
 # Enable and start kubelet:
 
 systemctl enable --now kubelet
 
 
 
-#
+# Hidden directory creation in home of the non-root user:
 
 su - ${DOCKER_USER} -c 'mkdir ~/.kube'
 
