@@ -144,7 +144,9 @@ read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
 
 kubeadm init \
   --pod-network-cidr=${NET_CIDR} \
+  --service-cidr=${NET_CIDR} \
   --ignore-preflight-errors=Swap \
+  --apiserver-advertise-address `hostname -i` \
   --node-name `hostname -s`
 
 
