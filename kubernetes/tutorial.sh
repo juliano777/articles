@@ -128,6 +128,12 @@ EOF
 
 
 
+#
+
+kubeadm config images pull
+
+
+
 # Type your network CIDR (X.X.X.X/X):
 
 read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
