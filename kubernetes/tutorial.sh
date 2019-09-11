@@ -185,12 +185,6 @@ chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
 
 #
 
-kubeadm init --apiserver-advertise-address `hostname -i`
-
-
-
-#
-
 kubeadm token delete `kubeadm token list | fgrep -v 'TOKEN' |\
     awk '{print $1}'`
 
