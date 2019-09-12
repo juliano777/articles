@@ -140,9 +140,16 @@ read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
 
 
 
+# Kubernetes version:
+
+K8S_VERSION=`kubectl version --short | fgrep Server | awk '{print $(NF)}'`
+
+
+
 # kubeadm init initialize the config.yaml configuration file:
 
 kubeadm init \
+  --use-kubernetes-version ${K8S_VERSION} \
   --pod-network-cidr=${NET_CIDR} \
   --service-cidr=${NET_CIDR} \
   --ignore-preflight-errors=Swap \
