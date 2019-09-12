@@ -148,6 +148,10 @@ read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
 
 # Kubernetes version:
 
+K8S_VERSION='<Kubernetes server version>'
+
+# or...
+
 K8S_VERSION=`kubectl version --short | fgrep Server | awk '{print $(NF)}'`
 
 
@@ -207,8 +211,9 @@ chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
 
 # Flannel network plugin installation:
 
+su - ${DOCKER_USER} -c "\
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/\
-Documentation/kube-flannel.yml
+Documentation/kube-flannel.yml"
 
 
 
