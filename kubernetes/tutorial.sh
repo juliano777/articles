@@ -178,7 +178,8 @@ su - ${DOCKER_USER} -c 'mkdir ~/.kube'
 
 # Enable kubectl auto completion (needs bash-completion pre installed):
 
-echo 'source <(kubectl completion bash)' >> /etc/profile.d/kubectl.sh
+echo 'source <(kubectl completion bash)' >> /etc/profile.d/kubectl.sh && \
+chmod +x /etc/profile.d/kubectl.sh
 
 
 
@@ -206,7 +207,8 @@ chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
 
 # Flannel network plugin installation:
 
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/\
+Documentation/kube-flannel.yml
 
 
 
