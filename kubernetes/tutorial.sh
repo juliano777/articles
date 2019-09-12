@@ -231,45 +231,19 @@ su - ${DOCKER_USER} -c 'kubectl get nodes'
 
 
 
+#
 
-
-
-
-
-
-
-
-
+kubeadm token list | fgrep -v 'TOKEN' | awk '{print $1}'
 
 
 
 #
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"
-kubeadm token list | fgrep -v 'TOKEN' | awk '{print $1}'
-z2wgjs.78r5r84gfvbs26t6
-
-
-
-
 kubeadm token create --print-join-command
 
 
+
+#
+
 kubeadm join 192.168.56.10:6443 --token z2wgjs.78r5r84gfvbs26t6 \
     --discovery-token-ca-cert-hash sha256:d5daa632a744257d346b754cfdb21f0d6ecdf080536b7d06a15c06ffef4d8605
-
-"
