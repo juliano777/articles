@@ -140,6 +140,12 @@ read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
 
 
 
+# Type your network POD network CIDR (X.X.X.X/X):
+
+read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
+
+
+
 # Kubernetes version:
 
 K8S_VERSION=`kubectl version --short | fgrep Server | awk '{print $(NF)}'`
@@ -150,7 +156,7 @@ K8S_VERSION=`kubectl version --short | fgrep Server | awk '{print $(NF)}'`
 
 kubeadm init \
   --kubernetes-version ${K8S_VERSION} \
-  --pod-network-cidr=${NET_CIDR} \
+  --pod-network-cidr=${POD_CIDR} \
   --service-cidr=${NET_CIDR} \
   --ignore-preflight-errors=Swap \
   --apiserver-advertise-address `hostname -i` \
@@ -198,6 +204,12 @@ chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
 
 
 
+# Flannel network plugin installation:
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+
+
 #
 
 kubeadm token delete `kubeadm token list | fgrep -v 'TOKEN' |\
@@ -205,7 +217,7 @@ kubeadm token delete `kubeadm token list | fgrep -v 'TOKEN' |\
 
 
 
-#
+# 
 
 kubeadm token create --print-join-command
 
