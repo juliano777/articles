@@ -110,7 +110,9 @@ EOF
 
 # Packages of Kubernetes to install:
 
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes  # master
+
+yum install -y kubelet --disableexcludes=kubernetes  # nodes
 
 
 
@@ -206,6 +208,12 @@ cp -vi /etc/kubernetes/admin.conf `eval echo ~${DOCKER_USER}/.kube/config`
 
 chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
     `eval echo ~${DOCKER_USER}/.kube`
+
+
+
+# 
+
+# https://docs.projectcalico.org/v2.0/getting-started/kubernetes/installation/integration
 
 
 
