@@ -164,7 +164,6 @@ kubeadm init \
   --kubernetes-version ${K8S_VERSION} \
   --pod-network-cidr=${POD_CIDR} \
   --service-cidr=${NET_CIDR} \
-  --ignore-preflight-errors=Swap \
   --apiserver-advertise-address `hostname -i` \
   --node-name `hostname -s`
 
@@ -211,10 +210,11 @@ chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
 
 
 
-# 
+# Calico network plugin installation:
 
-# https://docs.projectcalico.org/v2.0/getting-started/kubernetes/installation/integration
-
+kubectl apply -f \
+https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation\
+/hosted/kubeadm/1.6/calico.yaml
 
 
 # Flannel network plugin installation:
