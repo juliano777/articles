@@ -1,35 +1,31 @@
 # Install packages:
 
-yum install -y yum-utils device-mapper-persistent-data lvm2 ebtables ethtool
+sudo yum install -y \
+  yum-utils device-mapper-persistent-data lvm2 ebtables ethtool
 
 
 
 # First of all we need Docker:
 
-wget -O - https://get.docker.com | bash
+wget -O - https://get.docker.com | sudo bash
 
-
-
-# What is your user to use Docker?:
-
-read -p 'What is your user to use Docker? ' DOCKER_USER
 
 
 # Add your user to Docker group:
 
-usermod -aG docker ${DOCKER_USER}
+sudo usermod -aG docker `whoami`
 
 
 
 # Configuration directory of Docker:
 
-mkdir /etc/docker
+sudo mkdir /etc/docker
 
 
 
 # Setup Docker daemon:
 
-cat << EOF > /etc/docker/daemon.json
+sudo cat << EOF > /etc/docker/daemon.json
 {
   "experimental": false,
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -49,13 +45,13 @@ EOF
 
 # Enable and start Docker service:
 
-systemctl enable --now docker.service
+sudo systemctl enable --now docker.service
 
 
 
 # Kubernetes repository file:
 
-cat << EOF > /etc/yum.repos.d/kubernetes.repo
+sudo cat << EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -70,7 +66,7 @@ EOF
 
 # Update repository list;
 
-yum repolist -y
+sudo yum repolist -y
 
 
 
@@ -78,30 +74,30 @@ yum repolist -y
 
 # On /etc/fstab:
 
-sed 's/\(.*swap\)/#\1/g' -i /etc/fstab
+sudo sed 's/\(.*swap\)/#\1/g' -i /etc/fstab
 
 # Immediate, via command:
 
-swapoff -a
+sudo swapoff -a
 
 
 
 # Disable and stop firewall:
 
-systemctl disable --now firewalld
+sudo systemctl disable --now firewalld
 
 
 
 # Disable Selinux:
 
-sed 's/SELINUX=.ermissive/SELINUX=disabled/g' -i /etc/selinux/config && \
+sudo sed 's/SELINUX=.ermissive/SELINUX=disabled/g' -i /etc/selinux/config && \
 setenforce 0
 
 
 
 # Sysctl properties:
 
-cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
+sudo cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
@@ -110,21 +106,21 @@ EOF
 
 # Packages of Kubernetes to install:
 
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes  # master
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes  # master
 
-yum install -y kubelet --disableexcludes=kubernetes  # nodes
+sudo yum install -y kubelet --disableexcludes=kubernetes  # nodes
 
 
 
 # Clean up downloaded packages:
 
-yum clean all
+sudo yum clean all
 
 
 
 #
 
-cat << EOF > /etc/default/kubelet
+sudo cat << EOF > /etc/default/kubelet
 KUBELET_EXTRA_ARGS='--cgroup-driver=systemd'
 EOF
 
@@ -132,7 +128,7 @@ EOF
 
 #
 
-kubeadm config images pull
+sudo kubeadm config images pull
 
 
 
@@ -150,17 +146,14 @@ read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
 
 # Kubernetes version:
 
-K8S_VERSION='<Kubernetes server version>'
-
-# or...
-
-K8S_VERSION=`kubectl version --short | fgrep Server | awk '{print $(NF)}'`
+K8S_VERSION=`kubectl version --short 2> /dev/null | \
+  fgrep Client | awk '{print $(NF)}'`
 
 
 
 # kubeadm init initialize the config.yaml configuration file:
 
-kubeadm init \
+sudo kubeadm init \
   --kubernetes-version ${K8S_VERSION} \
   --pod-network-cidr=${POD_CIDR} \
   --service-cidr=${NET_CIDR} \
@@ -169,22 +162,56 @@ kubeadm init \
 
 
 
+# Edit the service file of kubelet:
+
+sudo systemctl edit --full kubelet.service
+
+
+# Add the following lines in [Service] section:
+
+"
+CPUAccounting=true
+MemoryAccounting=true
+"
+
+
+
+# 
+
+sudo systemctl daemon-reload
+
+
+
 # Enable and start kubelet:
 
-systemctl enable --now kubelet
+sudo systemctl enable --now kubelet
 
 
 
 # Hidden directory creation in home of the non-root user:
 
-su - ${DOCKER_USER} -c 'mkdir ~/.kube'
+mkdir ~/.kube
+
+
+
+#
+
+sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
+
+sudo chown `id -u`:`id -g` ~/.kube/config
+
+
+
 
 
 
 # Enable kubectl auto completion (needs bash-completion pre installed):
 
-echo 'source <(kubectl completion bash)' >> /etc/profile.d/kubectl.sh && \
-chmod +x /etc/profile.d/kubectl.sh
+echo 'source <(kubectl completion bash)' | sudo tee /etc/profile.d/kubectl.sh
+
+sudo chmod +x /etc/profile.d/kubectl.sh
+
+source /etc/profile.d/kubectl.sh
 
 
 
@@ -193,20 +220,6 @@ chmod +x /etc/profile.d/kubectl.sh
 
 
 # ==== Primary Node ==========================================================
-
-
-
-
-#
-
-cp -vi /etc/kubernetes/admin.conf `eval echo ~${DOCKER_USER}/.kube/config`
-
-
-
-#
-
-chown -R `id -u ${DOCKER_USER}`:`id -g ${DOCKER_USER}`\
-    `eval echo ~${DOCKER_USER}/.kube`
 
 
 
@@ -219,9 +232,8 @@ https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation\
 
 # Flannel network plugin installation:
 
-su - ${DOCKER_USER} -c "\
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/\
-Documentation/kube-flannel.yml"
+Documentation/kube-flannel.yml
 
 
 
