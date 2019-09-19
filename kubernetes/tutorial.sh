@@ -97,10 +97,10 @@ setenforce 0
 
 # Sysctl properties:
 
-sudo cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
+sudo bash -c 'cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
-EOF
+EOF'
 
 
 
@@ -120,9 +120,9 @@ sudo yum clean all
 
 #
 
-sudo cat << EOF > /etc/default/kubelet
+sudo bash -c 'cat << EOF > /etc/default/kubelet
 KUBELET_EXTRA_ARGS='--cgroup-driver=systemd'
-EOF
+EOF'
 
 
 
@@ -158,7 +158,7 @@ sudo kubeadm init \
   --pod-network-cidr=${POD_CIDR} \
   --service-cidr=${NET_CIDR} \
   --apiserver-advertise-address `hostname -i` \
-  --node-name `hostname -s`
+  --node-name `hostname -f`
 
 
 
