@@ -255,15 +255,37 @@ sudo systemctl restart kubelet.service
 # ============================
 
 
-# Join into the cluster:
 
-kubeadm join <master_host>:6443 --token <token> --discovery-token-ca-cert-hash <hash>
+# Enter the master node IP or hostname:
+
+read -p 'Enter the master node (IP or hostname): ' K8S_MASTER
+
+
+
+# Generate the SSH key:
+
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+
+
+
+# Copy the SSH key to Master node:
+
+ssh-copy-id ${K8S_MASTER}
 
 
 
 # Copy the .kube directory into the current node:
 
-scp -r <master_host>:~/.kube .
+scp -r ${K8S_MASTER}:~/.kube .
+
+
+
+# Join into the cluster:
+
+# kubeadm join <master_host>:6443 --token <token> --discovery-token-ca-cert-hash <hash>
+
+ssh ${K8S_MASTER} 'kubeadm token create --print-join-command' | \
+xargs -i sudo bash -c "{}"
 
 
 
@@ -287,4 +309,4 @@ kubectl run foo --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:alpine 
 
 #
 
-port-forward deploy/web-server --namespace=nsfoo 8000:80 &
+kubectl port-forward deploy/web-server --namespace=nsfoo 8000:80 &
