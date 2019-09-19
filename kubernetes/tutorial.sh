@@ -195,12 +195,29 @@ mkdir ~/.kube
 
 # Copy admin.conf file and give the properly ownership:
 
-sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
+sudo bash -c "cat /etc/kubernetes/admin.conf > ~`whoami`/.kube/config"
 
 sudo chown `id -u`:`id -g` ~/.kube/config
 
 
 
+# Environment variable for Calico version (X.Y) :
+
+read -p 'Enter Calico version (X.Y): ' CALICO_VERSION
+
+
+
+# Calico CNI plugin installation:
+
+wget -qO - https://docs.projectcalico.org/v${CALICO_VERSION}/\
+manifests/calico.yaml | sed "s:192.168.0.0/16:${POD_CIDR}:g" | \
+kubectl apply -f -
+
+
+
+# Restart kubelet service:
+
+sudo systemctl restart kubelet.service
 
 
 
@@ -222,17 +239,6 @@ source /etc/profile.d/kubectl.sh
 
 
 
-# Calico network plugin installation:
-
-kubectl apply -f \
-https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation\
-/hosted/kubeadm/1.6/calico.yaml
-
-
-# Flannel network plugin installation:
-
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/\
-Documentation/kube-flannel.yml
 
 
 
