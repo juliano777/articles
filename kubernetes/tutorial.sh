@@ -287,4 +287,4 @@ kubectl run web-server --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:
 
 #
 
-port-forward deploy/web-server --namespace=nsfoo 8000:80
+port-forward deploy/web-server --namespace=nsfoo 8000:80 &
