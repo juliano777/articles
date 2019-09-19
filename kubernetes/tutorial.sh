@@ -281,7 +281,7 @@ kubectl create namespace nsfoo
 
 # 
 
-kubectl run web-server --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:alpine --labels='app=ws,env=prod'
+kubectl run foo --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:alpine --labels='app=foo,env=prod'
 
 
 
