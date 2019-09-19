@@ -270,3 +270,21 @@ scp -r <master_host>:~/.kube .
 # Get the nodes of the cluster:
 
 kubectl get nodes
+
+
+
+#
+
+kubectl create namespace nsfoo
+
+
+
+# 
+
+kubectl run web-server --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:alpine --labels='app=ws,env=prod'
+
+
+
+#
+
+port-forward deploy/web-server --namespace=nsfoo 8000:80
