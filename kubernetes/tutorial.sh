@@ -162,16 +162,15 @@ sudo kubeadm init \
 
 
 
-# Edit the service file of kubelet:
+# Create aditional file for service kubelet:
 
-sudo systemctl edit --full kubelet.service
+sudo bash -c "mkdir /etc/systemd/system/kubelet.service.d 2> /dev/null ; \
+cat << EOF > /etc/systemd/system/kubelet.service.d/11-cgroups.conf
+[Service]
 
-
-# Add the following lines in [Service] section:
-
-"
 CPUAccounting=true
 MemoryAccounting=true
+EOF
 "
 
 
@@ -194,7 +193,7 @@ mkdir ~/.kube
 
 
 
-#
+# Copy admin.conf file and give the properly ownership:
 
 sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
 
