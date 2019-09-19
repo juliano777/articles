@@ -1,3 +1,7 @@
+# =========================
+# ======= ALL NODES =======
+# =========================
+
 # Install packages:
 
 sudo yum install -y \
@@ -108,8 +112,6 @@ EOF'
 
 sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes  # master
 
-sudo yum install -y kubelet --disableexcludes=kubernetes  # nodes
-
 
 
 # Clean up downloaded packages:
@@ -118,47 +120,13 @@ sudo yum clean all
 
 
 
-#
+# Enable kubectl auto completion (needs bash-completion pre installed):
 
-sudo bash -c 'cat << EOF > /etc/default/kubelet
-KUBELET_EXTRA_ARGS='--cgroup-driver=systemd'
-EOF'
+echo 'source <(kubectl completion bash)' | sudo tee /etc/profile.d/kubectl.sh
 
+sudo chmod +x /etc/profile.d/kubectl.sh
 
-
-#
-
-sudo kubeadm config images pull
-
-
-
-# Type your network CIDR (X.X.X.X/X):
-
-read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
-
-
-
-# Type your network POD network CIDR (X.X.X.X/X):
-
-read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
-
-
-
-# Kubernetes version:
-
-K8S_VERSION=`kubectl version --short 2> /dev/null | \
-  fgrep Client | awk '{print $(NF)}'`
-
-
-
-# kubeadm init initialize the config.yaml configuration file:
-
-sudo kubeadm init \
-  --kubernetes-version ${K8S_VERSION} \
-  --pod-network-cidr=${POD_CIDR} \
-  --service-cidr=${NET_CIDR} \
-  --apiserver-advertise-address `hostname -i` \
-  --node-name `hostname -f`
+source /etc/profile.d/kubectl.sh
 
 
 
@@ -181,9 +149,70 @@ sudo systemctl daemon-reload
 
 
 
+#
+
+sudo bash -c 'cat << EOF > /etc/default/kubelet
+KUBELET_EXTRA_ARGS='--cgroup-driver=systemd'
+EOF'
+
+
+
 # Enable and start kubelet:
 
-sudo systemctl enable --now kubelet
+sudo systemctl enable kubelet
+
+
+
+# ===========================
+# ======= MASTER NODE =======
+# ===========================
+
+
+
+# Type your network CIDR (X.X.X.X/X):
+
+read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
+
+
+
+# Type your network POD network CIDR (X.X.X.X/X):
+
+read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
+
+
+
+# Kubernetes version:
+
+K8S_VERSION=`kubectl version --short 2> /dev/null | \
+  fgrep Client | awk '{print $(NF)}'`
+
+
+
+#
+
+sudo kubeadm config images pull  
+
+
+
+# kubeadm init initialize the config.yaml configuration file:
+
+sudo kubeadm init \
+  --kubernetes-version ${K8S_VERSION} \
+  --pod-network-cidr=${POD_CIDR} \
+  --service-cidr=${NET_CIDR} \
+  --apiserver-advertise-address `hostname -i` \
+  --node-name `hostname -f`
+
+# Then you will get a message like this:
+
+"
+. . .
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.56.10:6443 --token lkjswx.5qzdsiba6p12e1yp \
+    --discovery-token-ca-cert-hash sha256:011dffe0adcc6e8c815c216d4996e943d79d5f90c7c4720890e89f05264a77aa
+"
 
 
 
@@ -221,80 +250,25 @@ sudo systemctl restart kubelet.service
 
 
 
-# Enable kubectl auto completion (needs bash-completion pre installed):
-
-echo 'source <(kubectl completion bash)' | sudo tee /etc/profile.d/kubectl.sh
-
-sudo chmod +x /etc/profile.d/kubectl.sh
-
-source /etc/profile.d/kubectl.sh
+# ============================
+# ======= WORKER NODES =======
+# ============================
 
 
+# Join into the cluster:
 
-
-# ===== Cluster Configuration ================================================
-
-
-# ==== Primary Node ==========================================================
+kubeadm join <master_host>:6443 --token <token> --discovery-token-ca-cert-hash <hash>
 
 
 
+# Copy the .kube directory into the current node:
+
+scp -r <master_host>:~/.kube .
 
 
 
-#
+# Get the nodes of the cluster:
 
-kubeadm token delete `kubeadm token list | fgrep -v 'TOKEN' |\
-    awk '{print $1}'`
-
+kubectl get nodes
 
 
-# 
-
-kubeadm token create --print-join-command
-
-
-
-#
-
-su - ${DOCKER_USER} -c "kubectl apply -f \
-    https://cloud.weave.works/k8s/net?k8s-version=\
-`kubectl version | base64 | tr -d '\n'`"
-
-
-
-
-
-# ==== Secondary Nodes =======================================================
-
-
-kubeadm join 192.168.56.10:6443 \
-    --token 6z0y76.dsmf3fntbmrceya4 \
-    --discovery-token-ca-cert-hash \
-    sha256:c879596b560356aa942031fded10b824c0f10a4c44299176386c2d874465daa4
-
-
-# ==== Primary Node ==========================================================
-
-#
-
-su - ${DOCKER_USER} -c 'kubectl get nodes'
-
-
-
-#
-
-kubeadm token list | fgrep -v 'TOKEN' | awk '{print $1}'
-
-
-
-#
-
-kubeadm token create --print-join-command
-
-
-
-#
-
-kubeadm join 192.168.56.10:6443 --token z2wgjs.78r5r84gfvbs26t6 \
-    --discovery-token-ca-cert-hash sha256:d5daa632a744257d346b754cfdb21f0d6ecdf080536b7d06a15c06ffef4d8605
