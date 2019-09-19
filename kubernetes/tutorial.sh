@@ -25,7 +25,7 @@ sudo mkdir /etc/docker
 
 # Setup Docker daemon:
 
-sudo cat << EOF > /etc/docker/daemon.json
+sudo bash -c 'cat << EOF > /etc/docker/daemon.json
 {
   "experimental": false,
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -39,7 +39,7 @@ sudo cat << EOF > /etc/docker/daemon.json
   ]
 }
 // "experimental" -> Enable if you want to test experimental features
-EOF
+EOF'
 
 
 
