@@ -270,5 +270,3 @@ scp -r <master_host>:~/.kube .
 # Get the nodes of the cluster:
 
 kubectl get nodes
-
-
