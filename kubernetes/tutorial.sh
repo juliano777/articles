@@ -5,7 +5,7 @@
 # Install packages:
 
 sudo yum install -y \
-  yum-utils device-mapper-persistent-data lvm2 ebtables ethtool
+  yum-utils device-mapper-persistent-data lvm2 ebtables ethtool bash-completion
 
 
 
@@ -110,7 +110,7 @@ EOF'
 
 # Packages of Kubernetes to install:
 
-sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes  # master
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 
 
 
