@@ -120,13 +120,16 @@ sudo yum clean all
 
 
 
-# Enable kubectl auto completion (needs bash-completion pre installed):
+# Enable kubectl and kubeadm auto completion
+# (needs bash-completion pre installed):
 
 echo 'source <(kubectl completion bash)' | sudo tee /etc/profile.d/kubectl.sh
 
-sudo chmod +x /etc/profile.d/kubectl.sh
+echo 'source <(kubeadm completion bash)' | sudo tee /etc/profile.d/kubeadm.sh
 
-source /etc/profile.d/kubectl.sh
+sudo chmod +x /etc/profile.d/kube{adm,ctl}.sh
+
+source /etc/profile.d/kube{adm,ctl}.sh
 
 
 
