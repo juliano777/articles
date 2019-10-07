@@ -321,3 +321,16 @@ kubectl run foo --namespace=nsfoo --replicas=5 --port=8000 --image=nginx:alpine 
 #
 
 kubectl port-forward deploy/web-server --namespace=nsfoo 8000:80 &
+
+
+
+# ============================================================================
+# Helm Installation
+# ============================================================================
+
+# Download Helm:
+wget -c https://get.helm.sh/helm-v3.0.0-beta.3-linux-amd64.tar.gz -P /tmp
+
+
+
+# 
