@@ -314,19 +314,19 @@ from human_resource.models.hr import Person
 
 
 
-<>:
+Make migrations for human_resource app:
 
-$ makemigrations human_resource
+$ manage.py makemigrations human_resource
 
 
 
-<>:
+Fake migration:
 
 $ manage.py migrate --fake
 
 
 
-<>:
+Let's check the directory hierarchy of the app:
 
 $ tree human_resource/
 
@@ -354,7 +354,7 @@ human_resource/
 
 
 
-<>:
+Django Shell (Ipython):
 
 $ manage.py shell
 
@@ -369,7 +369,7 @@ p.save()
 
 
 
-<>:
+Database shell (psql):
 
 $ manage.py dbshell
 
@@ -381,4 +381,4 @@ db_test=> SELECT id, name, surname FROM ns_hr.tb_person;
   1 | Ludwig | van Beethoven
 
 django.txt
-Exibindo django.txt.
+Exibindo django.txt
