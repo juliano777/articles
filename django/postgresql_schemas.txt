@@ -316,6 +316,12 @@ INSTALLED_APPS = [
 
 
 
+    A cool Django trick: you can use a directory models instead of a file models.py.
+    But you must create a dunder init file (__init__.py) inside the models directory.
+    Let's go!
+
+
+
 Creation of models directory inside the the app directory:
 
 $ mkdir human_resource/models
@@ -367,6 +373,15 @@ from human_resource.models.hr import Person
 
 
 (No) Migrations: My Database, My Rules!
+
+    We create the structure of our database and no ORM should do it for us!
+    We have the power!
+    We have the might!
+    We are in command!
+    
+    Our database, our rules! ;)
+    
+    Just model your database by your own hands and make a fake Django migration.
 
 
 
@@ -432,6 +447,9 @@ Database shell (psql):
 
 $ manage.py dbshell
 
+
+
+A query to check if the data was inserted by Django:
 
 db_test=> SELECT id, name, surname FROM ns_hr.tb_person;
 
