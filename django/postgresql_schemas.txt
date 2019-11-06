@@ -116,17 +116,31 @@ CREATE TABLE ns_hr.tb_person(
 );
 
     A simple table...
-
-
-
-
+    
+    
+    Hit <Ctrl> + D to exit.
+    
+    
+    
 - Django
 
-
-
+    It's time to code in Python! :D
+    
+    - Virtual environment;
+    - Python modules installation;
+    - Django project creation and configuration;
+    - Django app creation;
+    - Django model creation;
+    - Migrations;
+    - Tests in shell;
+    
+    
+    
 Virtual environment creation:
 
 $ virtualenv -p `which python3.8` django
+
+    The absolute path of binary of Python 3.8 was indicated as Python interpreter of this environment.
 
 
 
@@ -134,11 +148,15 @@ Access directory of environment and activate it:
 
 $ cd django && source bin/activate
 
+    Your prompt changed, started at "(django)" indicating that your virtual environment was activated.
+
 
 
 Install need modules for our tests:
 
 $ pip install django psycopg2-binary configobj ipython
+
+    Respectivaly: Django web framework, PostgreSQL driver, configuration file reader and improved interactive shell.
 
 
 
@@ -152,6 +170,8 @@ Rename the directory of project to src:
 
 $ mv my_project src
 
+    This is for ease the directory hierarchy and will not affect the results. It's because that has a same name directory that can cause some confusion...
+
 
 
 Database configuration file creation:
@@ -163,6 +183,8 @@ DB_USER = 'user_test'
 DB_PASSWORD = '123'
 DB_PORT = 5432
 EOF
+
+    Here we created a separated configuration file for the database connection.
 
 
 
@@ -176,17 +198,25 @@ import os
 from configobj import ConfigObj
 
 
+    Below the imports add a line that brings ConfigObj class.
+
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# Database configuration file location
 db_config_file = '{}/{}'.format(BASE_DIR, 'my_project/db.conf')
+
+# Read the configurations from file
 db_config = ConfigObj(db_config_file)
 
-DB_HOST = db.conf['DB_HOST']
-DB_NAME = db.conf['DB_NAME']
-DB_USER = db.conf['DB_USER']
-DB_PASSWORD = db.conf['DB_PASSWORD']
-DB_PORT = db.conf['DB_PORT']
+# Database connection parameters
+
+DB_HOST = db_config['DB_HOST']
+DB_NAME = db_config['DB_NAME']
+DB_USER = db_config['DB_USER']
+DB_PASSWORD = db_config['DB_PASSWORD']
+DB_PORT = db_config['DB_PORT']
 
 DATABASES = {
              'default': {
@@ -198,12 +228,16 @@ DATABASES = {
                          'PORT': DB_PORT,
                          }
             }
+            
+    Modify the database "session" as above.            
 
 
 
 Symbolic link creation for manage.py:
 
 $ ln -s `pwd`/src/manage.py `pwd`/bin/manage.py
+
+    To ease our work we created a symbolic link to manage.py in bin directory that is in our $PATH.
 
 
 
@@ -216,6 +250,8 @@ $ cd src
 Run virtual web server:
 
 $ manage.py runserver 0.0.0.0:8000
+
+    Test in your browser: http://localhost:8000 and then <Control> + C to abort.
 
 
 
@@ -236,6 +272,9 @@ $ tree .
     ├── settings.py
     ├── urls.py
     └── wsgi.py
+    
+    List contents of current directory in a tree-like format.
+    Here we see all files inside the project.
 
 
 
@@ -377,12 +416,15 @@ $ manage.py shell
 
 from human_resource.models.hr import Person
 
-p = Person(name='Ludwig', surname='van Beethoven')                                                                                                    
+p = Person(name='Ludwig', surname='van Beethoven')                                                                         
 
-print(p)                                                                                                                                              
+print(p)
 Ludwig van Beethoven
 
 p.save()
+
+
+    <Ctrl> + D to exit!
 
 
 
