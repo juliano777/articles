@@ -33,6 +33,12 @@ About our Lab
 
     That's a simple lab with Django in a virtual environment (with virtualenv) and PostgreSQL installed in localhost.
 
+    - Python 3.8
+    - Django 2.2
+    - PostgreSQL 12
+
+    Should work with certain older versions.
+
 
 Practice
 
@@ -101,37 +107,37 @@ CREATE TABLE ns_hr.tb_person(
 
 
 
-<>:
+Virtual environment creation:
 
 $ virtualenv -p `which python3.8` django
 
 
 
-<>:
+Access directory of environment and activate it:
 
 $ cd django && source bin/activate
 
 
 
-<>:
+Install need modules for our tests:
 
 $ pip install django psycopg2-binary configobj ipython
 
 
 
-<>:
+New Django project creation:
 
 $ django-admin startproject my_project
 
 
 
-<>:
+Rename the directory of project to src:
 
 $ mv my_project src
 
 
 
-<>:
+Database configuration file creation:
 
 $ cat << EOF > src/my_project/db.conf
 DB_HOST = 'localhost'
@@ -143,7 +149,7 @@ EOF
 
 
 
-<>:
+Edit the main configuration file of the project:
 
 $ vim src/my_project/settings.py
 
@@ -178,25 +184,25 @@ DATABASES = {
 
 
 
-<>:
+Symbolic link creation for manage.py:
 
 $ ln -s `pwd`/src/manage.py `pwd`/bin/manage.py
 
 
 
-<>:
+Access project directory:
 
 $ cd src
 
 
 
-<>:
+Run virtual web server:
 
 $ manage.py runserver 0.0.0.0:8000
 
 
 
-<>:
+Let's check the files inside the current directory:
 
 $ tree .
 
@@ -216,25 +222,25 @@ $ tree .
 
 
 
-<>:
+First migration for Django metadata:
 
 $ manage.py migrate
 
 
 
-<>:
+Creation of super user of Django:
 
 $ manage.py createsuperuser
 
 
 
-<>:
+Create an app:
 
 $ manage.py startapp human_resource
 
 
 
-<>:
+Edit settings.py to add new app:
 
 $ vim my_project/settings.py
 
@@ -254,25 +260,19 @@ INSTALLED_APPS = [
 
 
 
-<>:
+Creation of models directory inside the the app directory:
 
 $ mkdir human_resource/models
 
 
 
-<>:
+Remove the models.py file:
 
 $ rm -f human_resource/models.py
 
 
 
-<>:
-
-$ mkdir human_resource/models
-
-
-
-<>:
+Model creation:
 
 $ vim human_resource/models/hr.py
 
@@ -302,7 +302,7 @@ class Person(Model):
 
 
 
-<>:
+Dunder init inside the models directory fot the migrations take effect:
 
 vim human_resource/models/__init__.py
 
