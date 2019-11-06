@@ -1,0 +1,384 @@
+PostgreSQL Schemas / Namespaces with Django
+
+    What about if you could organize your database objects (e.g. tables and views) in namespaces according with its roles in the system?
+    In this article we will see the right way to handle with PostgreSQL schemas in Django and some little tips about Django models and Python.
+
+
+Schema
+
+    Also known as a namespace, schema is a type of database object whose purpose is to be a hierarchical organization layer that is just below a database.
+    On PostgreSQL, "public" is the default schema, but you can create your own namespaces to organize others kind objects such as tables, views, functions and etc.
+
+
+Database Objects Hierarchy
+
+- Server
+   |- PostgreSQL Instance (Port 5432 by default)
+       |- Role (Users and Groups)
+       |- Tablespace
+       |- Database
+           |- Trigger
+           |- Extension
+           |- Language
+           |- Schema      
+               |- Table
+               |- View
+               |- Materialized View
+               |- Sequence
+               |- Function
+               |- Procedure
+
+
+About our Lab
+
+    That's a simple lab with Django in a virtual environment (with virtualenv) and PostgreSQL installed in localhost.
+
+
+Practice
+
+- PostgreSQL
+
+
+
+Let's create our own example in psql build-in command line tool ;)
+
+$ psql
+
+
+
+Creation of user application:
+
+CREATE ROLE user_test ENCRYPTED PASSWORD '123' LOGIN;
+
+
+
+Creation of database for tests:
+
+CREATE DATABASE db_test OWNER user_test;
+
+
+
+Connect to it as user "user_test":
+
+\c db_test user_test
+
+
+
+Creation of a schema:
+
+CREATE SCHEMA ns_hr;
+
+
+
+Show all schemas that aren't catalogs:
+
+SELECT
+    nspname AS namespace
+    FROM pg_catalog.pg_namespace
+        WHERE nspname !~ '(^pg_|information_schema)';
+
+ namespace 
+-----------
+ public
+ ns_hr
+
+    Notice that appears the default namespace (public) and the ns_hr, created for our lab.
+
+
+
+Creation of a table in ns_hr schema:
+
+CREATE TABLE ns_hr.tb_person(
+    id serial primary key,
+    name text not null,
+    surname text not null
+);
+
+
+
+
+- Django
+
+
+
+<>:
+
+$ virtualenv -p `which python3.8` django
+
+
+
+<>:
+
+$ cd django && source bin/activate
+
+
+
+<>:
+
+$ pip install django psycopg2-binary configobj ipython
+
+
+
+<>:
+
+$ django-admin startproject my_project
+
+
+
+<>:
+
+$ mv my_project src
+
+
+
+<>:
+
+$ cat << EOF > src/my_project/db.conf
+DB_HOST = 'localhost'
+DB_NAME = 'db_test'
+DB_USER = 'user_test'
+DB_PASSWORD = '123'
+DB_PORT = 5432
+EOF
+
+
+
+<>:
+
+$ vim src/my_project/settings.py
+
+
+import os
+
+from configobj import ConfigObj
+
+
+# Database
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+db_config_file = '{}/{}'.format(BASE_DIR, 'my_project/db.conf')
+db_config = ConfigObj(db_config_file)
+
+DB_HOST = db.conf['DB_HOST']
+DB_NAME = db.conf['DB_NAME']
+DB_USER = db.conf['DB_USER']
+DB_PASSWORD = db.conf['DB_PASSWORD']
+DB_PORT = db.conf['DB_PORT']
+
+DATABASES = {
+             'default': {
+                         'ENGINE': 'django.db.backends.postgresql',
+                         'NAME': DB_NAME,
+                         'USER': DB_USER,
+                         'PASSWORD': DB_PASSWORD,
+                         'HOST': DB_HOST,
+                         'PORT': DB_PORT,
+                         }
+            }
+
+
+
+<>:
+
+$ ln -s `pwd`/src/manage.py `pwd`/bin/manage.py
+
+
+
+<>:
+
+$ cd src
+
+
+
+<>:
+
+$ manage.py runserver 0.0.0.0:8000
+
+
+
+<>:
+
+$ tree .
+
+.
+├── manage.py
+└── my_project
+    ├── db.conf
+    ├── __init__.py
+    ├── __pycache__
+    │   ├── __init__.cpython-38.pyc
+    │   ├── settings.cpython-38.pyc
+    │   ├── urls.cpython-38.pyc
+    │   └── wsgi.cpython-38.pyc
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+
+
+
+<>:
+
+$ manage.py migrate
+
+
+
+<>:
+
+$ manage.py createsuperuser
+
+
+
+<>:
+
+$ manage.py startapp human_resource
+
+
+
+<>:
+
+$ vim my_project/settings.py
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # Custom Apps
+    'human_resource',
+]
+
+
+
+<>:
+
+$ mkdir human_resource/models
+
+
+
+<>:
+
+$ rm -f human_resource/models.py
+
+
+
+<>:
+
+$ mkdir human_resource/models
+
+
+
+<>:
+
+$ vim human_resource/models/hr.py
+
+from django.db.models import AutoField
+from django.db.models import Model
+from django.db.models import TextField
+
+
+class Person(Model):
+    '''
+    Person Model
+
+    Namespace: ns_hr
+    Table: tb_person
+    '''
+
+    _id = AutoField(db_column='id', name='_id', primary_key=True,)
+    name = TextField(db_column='name', name='name',)
+    surname = TextField(db_column='surname', name='surname',)
+
+    def __str__(self):
+        return '{} {}'.format(self.name, self.surname)
+
+    class Meta:
+        db_table = 'ns_hr"."tb_person'  # 'schema"."object'
+        verbose_name_plural = 'Person'
+
+
+
+<>:
+
+vim human_resource/models/__init__.py
+
+from human_resource.models.hr import Person
+
+
+
+(No) Migrations: My Database, My Rules!
+
+
+
+<>:
+
+$ makemigrations human_resource
+
+
+
+<>:
+
+$ manage.py migrate --fake
+
+
+
+<>:
+
+$ tree human_resource/
+
+human_resource/
+├── admin.py
+├── apps.py
+├── __init__.py
+├── migrations
+│   ├── 0001_initial.py
+│   ├── __init__.py
+│   └── __pycache__
+│       ├── 0001_initial.cpython-38.pyc
+│       └── __init__.cpython-38.pyc
+├── models
+│   ├── hr.py
+│   ├── __init__.py
+│   └── __pycache__
+│       ├── hr.cpython-38.pyc
+│       └── __init__.cpython-38.pyc
+├── __pycache__
+│   ├── admin.cpython-38.pyc
+│   └── __init__.cpython-38.pyc
+├── tests.py
+└── views.py
+
+
+
+<>:
+
+$ manage.py shell
+
+from human_resource.models.hr import Person
+
+p = Person(name='Ludwig', surname='van Beethoven')                                                                                                    
+
+print(p)                                                                                                                                              
+Ludwig van Beethoven
+
+p.save()
+
+
+
+<>:
+
+$ manage.py dbshell
+
+
+db_test=> SELECT id, name, surname FROM ns_hr.tb_person;
+
+ id |  name  |    surname    
+----+--------+---------------
+  1 | Ludwig | van Beethoven
+
+django.txt
+Exibindo django.txt.
