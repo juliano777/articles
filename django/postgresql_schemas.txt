@@ -37,16 +37,23 @@ About our Lab
     - Django 2.2
     - PostgreSQL 12
 
-    Should work with certain older versions.
+    Should work with many older versions :)
 
 
 Practice
 
 - PostgreSQL
 
+    The database struture is the first thing that we will do. 
+    
+    - Creation of database user for the application;
+    - Database creation;
+    - Schema creation;
+    - Table creation
 
 
-Let's create our own example in psql build-in command line tool ;)
+
+Let's create our own example in psql build-in command line tool:
 
 $ psql
 
@@ -56,11 +63,15 @@ Creation of user application:
 
 CREATE ROLE user_test ENCRYPTED PASSWORD '123' LOGIN;
 
+    The database role was created with an encrypted password and login attribute (user).
+
 
 
 Creation of database for tests:
 
 CREATE DATABASE db_test OWNER user_test;
+
+    The database is owned by "user_test".
 
 
 
@@ -68,11 +79,15 @@ Connect to it as user "user_test":
 
 \c db_test user_test
 
+    Inside the psql shell \c database username.
+
 
 
 Creation of a schema:
 
 CREATE SCHEMA ns_hr;
+
+    The namespace for our example is ready!
 
 
 
@@ -99,6 +114,8 @@ CREATE TABLE ns_hr.tb_person(
     name text not null,
     surname text not null
 );
+
+    A simple table...
 
 
 
