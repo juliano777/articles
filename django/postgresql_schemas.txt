@@ -379,6 +379,3 @@ db_test=> SELECT id, name, surname FROM ns_hr.tb_person;
  id |  name  |    surname    
 ----+--------+---------------
   1 | Ludwig | van Beethoven
-
-django.txt
-Exibindo django.txt
