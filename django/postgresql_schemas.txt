@@ -466,3 +466,12 @@ db_test=> SELECT id, name, surname FROM ns_hr.tb_person;
  id |  name  |    surname    
 ----+--------+---------------
   1 | Ludwig | van Beethoven
+
+
+
+Conclusion
+
+    PostgreSQL is a robust and powerful RDBMS with a lot of features, including namespaces for its objects.
+    Django is a great web framework that is very robust and has a lot of features as well.
+    So, you can extract the better of both to achieve better results and to do this, one of the ways is getting a better organization.
+    Organizing your database objects in namespaces according with its roles will bring benefits for you ;)
