@@ -446,7 +446,7 @@ p = Person(name='Ludwig', surname='van Beethoven')
 print(p)
 Ludwig van Beethoven
 
-p.save()
+p.save()   # Persist in database
 
 
     <Ctrl> + D to exit!
