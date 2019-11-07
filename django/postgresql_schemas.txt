@@ -363,12 +363,21 @@ class Person(Model):
         verbose_name_plural = 'Person'
 
 
+    To enjoy the benefits of PostgreSQL schemas, inside your model, in Meta inner class, to the value of "db_table" attribute you must put a dot that separate namespace and object between quotation marks.
+
+    'schema"."object'
+
+    The object could be a table or a view, for example...
+
+
 
 Dunder init inside the models directory fot the migrations take effect:
 
 vim human_resource/models/__init__.py
 
 from human_resource.models.hr import Person
+
+    This is necessary for the models directory works as models.py file.
 
 
 
@@ -382,6 +391,7 @@ from human_resource.models.hr import Person
     Our database, our rules! ;)
     
     Just model your database by your own hands and make a fake Django migration.
+    Because only we know how the database objects must be created ;)
 
 
 
