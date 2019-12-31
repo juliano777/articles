@@ -195,9 +195,9 @@ sudo systemctl enable kubelet
 
 
 
-# Type your network CIDR (X.X.X.X/X):
+# Type your service network CIDR (X.X.X.X/X):
 
-read -p 'Type your network CIDR (X.X.X.X/X): ' NET_CIDR
+read -p 'Type your service network CIDR (X.X.X.X/X): ' SERVICE_CIDR
 
 
 
@@ -225,7 +225,7 @@ sudo kubeadm config images pull
 sudo kubeadm init \
   --kubernetes-version ${K8S_VERSION} \
   --pod-network-cidr=${POD_CIDR} \
-  --service-cidr=${NET_CIDR} \
+  --service-cidr=${SERVICE_CIDR} \
   --apiserver-advertise-address `hostname -i` \
   --node-name `hostname -f`
 
