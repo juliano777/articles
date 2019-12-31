@@ -195,9 +195,11 @@ sudo systemctl enable kubelet
 
 
 
-# Type your service network CIDR (X.X.X.X/X):
+# Type your service network CIDR (X.X.X.X/X, Default: "10.96.0.0/12") :
 
-read -p 'Type your service network CIDR (X.X.X.X/X): ' SERVICE_CIDR
+read -p \
+'Type your service network CIDR (X.X.X.X/X, Default: "10.96.0.0/12"):' \
+SERVICE_CIDR
 
 
 
@@ -207,14 +209,7 @@ read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
 
 
 
-# Kubernetes version:
-
-K8S_VERSION=`kubectl version --short 2> /dev/null | \
-  fgrep Client | awk '{print $(NF)}'`
-
-
-
-#
+# Pull images used by kubeadm
 
 sudo kubeadm config images pull  
 
@@ -223,7 +218,6 @@ sudo kubeadm config images pull
 # kubeadm init initialize the config.yaml configuration file:
 
 sudo kubeadm init \
-  --kubernetes-version ${K8S_VERSION} \
   --pod-network-cidr=${POD_CIDR} \
   --service-cidr=${SERVICE_CIDR} \
   --apiserver-advertise-address `hostname -i` \
