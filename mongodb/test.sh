@@ -1,5 +1,15 @@
 #!/bin/bash
 
+"
+MongoDB
+
+Main config file: /etc/mongod.conf
+Data directory: /var/lib/mongo
+Log directory: /var/log/mongodb
+System user: mongod
+System group: mongod
+"
+
 # ============================================================================
 # Installation
 # ============================================================================
