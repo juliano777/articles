@@ -44,5 +44,15 @@ dnf install -y mongodb-org && dnf clean all
 
 
 
+# Edit the configuration file
+vim /etc/mongod.conf
+
+"
+coment the line 'bindIp: ...'
+add just below, in the same indentation 'bindIpAll: true'
+"
+
+
+
 # Enable and start immediately the MongoDB service
 systemctl enable --now mongod
