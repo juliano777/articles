@@ -36,3 +36,13 @@ EOF
 
 # Update repository list
 dnf repolist
+
+
+
+# Install MongoDB
+dnf install -y mongodb-org && dnf clean all
+
+
+
+# Enable and start immediately the MongoDB service
+systemctl enable --now mongod
