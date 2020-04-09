@@ -56,3 +56,81 @@ add just below, in the same indentation 'bindIpAll: true'
 
 # Enable and start immediately the MongoDB service
 systemctl enable --now mongod
+
+
+
+# ============================================================================
+# Enable Access Control
+# ============================================================================
+# Ref.: https://docs.mongodb.com/manual/tutorial/enable-authentication/
+
+
+
+# Edit the configuration file
+vim /etc/mongod.conf
+
+
+
+# Add these lines at the bottom of config file:
+"
+security:
+    authorization: enabled
+"
+
+
+
+# MongoDB client
+mongo
+
+
+"
+use admin
+
+db.createUser(
+    {
+    user: 'admin',
+    pwd: passwordPrompt(), // or cleartext password
+    roles: [ {role: 'userAdminAnyDatabase', db: 'admin' }, 'readWriteAnyDatabase']
+    }
+)
+"
+
+
+
+# You can check that the user has been correctly created with this command:
+"
+db.auth('admin', passwordPrompt())
+"
+
+
+
+# Restart MongoDB service
+systemctl restart mongod
+
+
+
+# ============================================================================
+# Replication
+# ============================================================================
+# Ref.: https://docs.mongodb.com/manual/replication/
+# Ref.: https://docs.mongodb.com/manual/tutorial/deploy-replica-set/
+
+
+
+# Edit the configuration file
+vim /etc/mongod.conf
+
+
+
+# Add these lines at the bottom of config file:
+"
+replication:
+    replSetName: 'rs0'
+"
+
+
+
+# Restart MongoDB service
+systemctl restart mongod
+
+rs.add( { host: 'mongo-02.local:27017', priority: 0, votes: 0 } )
