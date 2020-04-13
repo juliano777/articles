@@ -116,6 +116,12 @@ systemctl restart mongod
 # Ref.: https://docs.mongodb.com/manual/tutorial/deploy-replica-set/
 
 
+mkdir /var/lib/mongo/security
+openssl rand -base64 756 > /var/lib/mongo/security/keyfile
+chmod 400 /var/lib/mongo/security/keyfile
+chown -R mongodb: /var/lib/mongo/security
+rsync -av /var/lib/mongo/security/keyfile root@mongo-03:/var/lib/mongo/security/
+systemctl stop mongod.service
 
 # Edit the configuration file
 vim /etc/mongod.conf
@@ -125,12 +131,35 @@ vim /etc/mongod.conf
 # Add these lines at the bottom of config file:
 "
 replication:
-    replSetName: 'rs0'
+  replSetName: 'rs0'
+
+security:
+  keyFile: /var/lib/mongo/security/keyfile
 "
+
+systemctl start mongod
+
+
+
+
 
 
 
 # Restart MongoDB service
-systemctl restart mongod
 
-rs.add( { host: 'mongo-02.local:27017', priority: 0, votes: 0 } )
+"
+rs.initiate(
+  {
+    _id : 'rs0',
+    members: [
+      { _id : 0, host : 'mongo-01:27017' },
+      { _id : 1, host : 'mongo-02:27017' },
+      { _id : 2, host : 'mongo-03:27017' }
+    ]
+  }
+)
+"
+
+
+
+
