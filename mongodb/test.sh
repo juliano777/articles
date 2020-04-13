@@ -116,15 +116,15 @@ systemctl restart mongod
 # Ref.: https://docs.mongodb.com/manual/tutorial/deploy-replica-set/
 
 
-mkdir /var/lib/mongo/security
-openssl rand -base64 756 > /var/lib/mongo/security/keyfile
-chmod 400 /var/lib/mongo/security/keyfile
-chown -R mongodb: /var/lib/mongo/security
-rsync -av /var/lib/mongo/security/keyfile root@mongo-03:/var/lib/mongo/security/
-systemctl stop mongod.service
+sudo mkdir -m 700 /var/lib/mongo/security
+sudo su -c 'openssl rand -base64 756 > /var/lib/mongo/security/keyfile'
+sudo chmod 400 /var/lib/mongo/security/keyfile
+sudo chown -R mongod: /var/lib/mongo/security
+sudo rsync -av /var/lib/mongo/security root@mongo-03:/var/lib/mongo/
+sudo systemctl stop mongod.service
 
 # Edit the configuration file
-vim /etc/mongod.conf
+sudo vim /etc/mongod.conf
 
 
 
@@ -161,5 +161,5 @@ rs.initiate(
 "
 
 
-
+rs0:SECONDARY> rs.slaveOk()
 
