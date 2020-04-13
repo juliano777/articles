@@ -163,3 +163,16 @@ rs.initiate(
 
 rs0:SECONDARY> rs.slaveOk()
 
+
+"
+use db_teste
+
+db.createUser(
+    {
+    user: 'user_teste',
+    pwd: passwordPrompt(), // or cleartext password
+    roles: [ {role: 'readWrite', db: 'db_teste' }],
+    mechanisms: [ 'SCRAM-SHA-256' ]
+    }
+)
+"
