@@ -18,16 +18,19 @@ System group: mongod
 
 
 # Enmvironment variable for Mongo version
-read -p "Enter MongoDB version: " MONGO_VERSION
-export MONGO_VERSION=${MONGO_VERSION:-4.2}
+read -p 'Enter MongoDB version: ' MONGO_VERSION
+export MONGO_VERSION="${MONGO_VERSION:-4.2}"
 
 
 
 # Heredoc for Mongo repository file
-cat << EOF > /etc/yum.repos.d/mongodb-org-${MONGO_VERSION}.repo
+cat << EOF > /tmp/mongodb-org-${MONGO_VERSION}.repo && \
+sudo mv /tmp/mongodb-org-${MONGO_VERSION}.repo /etc/yum.repos.d/ && \
+sudo chown root: /etc/yum.repos.d/mongodb-org-${MONGO_VERSION}.repo
 [mongodb-org-${MONGO_VERSION}]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/${releasever}/mongodb-org/${MONGO_VERSION}/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/\${releasever}/mongodb-org/\
+${MONGO_VERSION}/x86_64/
 gpgcheck=1
 enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-${MONGO_VERSION}.asc
