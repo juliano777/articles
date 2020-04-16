@@ -100,7 +100,7 @@ db.createUser(
     {
     user: 'admin',
     pwd: passwordPrompt(), // or cleartext password
-    roles: [ {role: 'userAdminAnyDatabase', db: 'admin' }, 'readWriteAnyDatabase']
+    roles: [ {role: 'root', db: 'admin' }, 'readWriteAnyDatabase']
     }
 )
 "
@@ -193,8 +193,14 @@ for i in `seq 0 $((${#NODE[@]}-1))`; do
 done
 
 
+
 # Start the MongoDB service
-systemctl start mongod
+sudo systemctl start mongod
+
+
+
+# Mongo client
+mongo -u admin
 
 
 
