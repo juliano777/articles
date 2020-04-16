@@ -18,7 +18,8 @@ System group: mongod
 
 
 # Enmvironment variable for Mongo version
-export MONGO_VERSION='4.2'
+read -p "Enter MongoDB version: " MONGO_VERSION
+MONGO_VERSION=${MONGO_VERSION:-4.2}
 
 
 
