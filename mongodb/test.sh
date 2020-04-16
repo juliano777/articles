@@ -187,7 +187,7 @@ security:
 
 
 # Script for send the config file to worker nodes
-for i in `seq 0 $((${#NODE[@]}-1))`; do
+for i in ${NODE[@]}; do
   echo -e "\n${NODE[$i]}\n"
   sudo rsync -av /etc/mongod.conf root@${NODE[i]}:/etc/mongod.conf;
 done
