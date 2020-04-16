@@ -199,8 +199,13 @@ sudo systemctl start mongod
 
 
 
+# Admin password
+read -sp 'Enter the admin password: ' ADMIN_PASSWD
+
+
+
 # Mongo client
-mongo -u admin
+mongo -u admin --eval 'rs.initiate()' -p ${ADMIN_PASSWD} admin
 
 
 
