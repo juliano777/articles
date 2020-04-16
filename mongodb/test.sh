@@ -194,6 +194,14 @@ done
 
 
 
+# Restart worker nodes
+for i in ${NODE[@]}
+do
+  ssh root@${i} 'systemctl restart mongod'  
+done
+
+
+
 # Start the MongoDB service
 sudo systemctl start mongod
 
@@ -206,6 +214,17 @@ read -sp 'Enter the admin password: ' ADMIN_PASSWD
 
 # Mongo client
 mongo -u admin --eval 'rs.initiate()' -p ${ADMIN_PASSWD} admin
+
+
+
+# Restart worker nodes
+for i in ${NODE[@]};
+do
+  mongo -u admin --eval "rs.add('${i}')" -p ${ADMIN_PASSWD} admin;
+done
+
+
+
 
 
 
