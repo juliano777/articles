@@ -188,8 +188,8 @@ security:
 
 # Script for send the config file to worker nodes
 for i in ${NODE[@]}; do
-  echo -e "\n${NODE[$i]}\n"
-  sudo rsync -av /etc/mongod.conf root@${NODE[i]}:/etc/mongod.conf;
+  echo -e "${i}\n"
+  sudo rsync -av /etc/mongod.conf root@${i}:/etc/mongod.conf;
 done
 
 
@@ -199,11 +199,6 @@ for i in ${NODE[@]}
 do
   ssh root@${i} 'systemctl restart mongod'  
 done
-
-
-
-# Start the MongoDB service
-sudo systemctl start mongod
 
 
 
