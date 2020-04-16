@@ -165,9 +165,10 @@ done
 
 
 
-
-
+# Stop the MongoDB service
 sudo systemctl stop mongod.service
+
+
 
 # Edit the configuration file
 sudo vim /etc/mongod.conf
@@ -183,6 +184,13 @@ security:
   keyFile: /var/lib/mongo/security/keyfile
 "
 
+
+
+# Script for send the config file to worker nodes
+for i in `seq 0 $((${#NODE[@]}-1))`; do
+  echo -e "\n${NODE[$i]}\n"
+  sudo rsync -av /etc/mongod.conf root@${NODE[i]}:/etc/mongod.conf;
+done
 
 
 # Start the MongoDB service
