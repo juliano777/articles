@@ -222,28 +222,6 @@ done
 
 
 
-
-
-
-# Restart MongoDB service
-
-"
-rs.initiate(
-  {
-    _id : 'rs0',
-    members: [
-      { _id : 0, host : 'mongo-01:27017' },
-      { _id : 1, host : 'mongo-02:27017' },
-      { _id : 2, host : 'mongo-03:27017' }
-    ]
-  }
-)
-"
-
-
-rs0:SECONDARY> rs.slaveOk()
-
-
 "
 use db_teste
 
@@ -255,4 +233,10 @@ db.createUser(
     mechanisms: [ 'SCRAM-SHA-256' ]
     }
 )
+
+db.person.insert({'name': 'Ludwig', 'surname': 'van Beethoven'})
 "
+
+
+
+rs0:SECONDARY> rs.slaveOk()
