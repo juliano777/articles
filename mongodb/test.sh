@@ -105,11 +105,6 @@ db.auth('admin', passwordPrompt())
 
 
 
-# Restart MongoDB service
-sudo systemctl restart mongod
-
-
-
 # ============================================================================
 # Replication
 # ============================================================================
@@ -164,14 +159,9 @@ sudo systemctl stop mongod.service
 # Edit the configuration file
 sudo vim /etc/mongod.conf
 
-
-
-# Add these lines at the bottom of config file:
 "
-replication:
-  replSetName: 'rs0'
-
 security:
+  authorization: enabled
   keyFile: /var/lib/mongo/security/keyfile
 "
 
