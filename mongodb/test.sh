@@ -82,8 +82,8 @@ sudo systemctl enable --now mongod
 
 
 
-# MongoDB client
-mongo
+# MongoDB client (admin database)
+mongo admin
 
 
 "
