@@ -8,6 +8,7 @@ Data directory: /var/lib/mongo
 Log directory: /var/log/mongodb
 System user: mongod
 System group: mongod
+Default port: 27017
 "
 
 # ============================================================================
@@ -209,23 +210,58 @@ done
 
 
 
+# User password
+read -sp 'Enter the admin password: ' USER_PASSWD
 
 
-"
-use db_teste
 
+# New user creation
+mongo -u admin -p ${ADMIN_PASSWD} admin << EOF
+
+// New database
+use db_test
+
+// New user
 db.createUser(
     {
-    user: 'user_teste',
-    pwd: passwordPrompt(), // or cleartext password
-    roles: [ {role: 'readWrite', db: 'db_teste' }],
+    user: 'user_test',
+    pwd: '${USER_PASSWD}',
+    roles: [ {role: 'readWrite', db: 'db_test' }],
     mechanisms: [ 'SCRAM-SHA-256' ]
     }
 )
 
-db.person.insert({'name': 'Ludwig', 'surname': 'van Beethoven'})
+EOF
+
+
+
+# Test user with a new collection
+mongo \
+  -u user_test \
+  -p ${USER_PASSWD} \
+  --eval "db.person.insert({'name': 'Ludwig', 'surname': 'van Beethoven'})" \
+  db_test
+
+
+
+# 
+export QUERY="
+// Enable queries in worker
+rs.slaveOk()
+
+// All results for the collection
+db.person.find()
 "
 
 
 
-rs0:SECONDARY> rs.slaveOk()
+# Test workers nodes
+for i in ${NODE[@]}
+do
+  mongo \
+    -u user_test \
+    -p ${USER_PASSWD} \
+    ${i}/db_test << EOF
+    ${QUERY}
+EOF
+done
