@@ -183,6 +183,11 @@ done
 
 
 
+#Start MongoDB service at the master node
+sudo systemctl start mongod.service
+
+
+
 # Admin password
 read -sp 'Enter the admin password: ' ADMIN_PASSWD
 
