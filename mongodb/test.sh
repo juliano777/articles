@@ -60,11 +60,6 @@ net:
 
 
 
-# Enable and start immediately the MongoDB service
-sudo systemctl enable --now mongod
-
-
-
 # ============================================================================
 # Enable Access Control
 # ============================================================================
@@ -72,16 +67,18 @@ sudo systemctl enable --now mongod
 
 
 
-# Edit the configuration file
+# Edit the configuration file (security session)
 sudo vim /etc/mongod.conf
 
-
-
-# Add these lines at the bottom of config file:
 "
 security:
     authorization: enabled
 "
+
+
+
+# Enable and start immediately the MongoDB service
+sudo systemctl enable --now mongod
 
 
 
