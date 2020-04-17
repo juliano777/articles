@@ -49,14 +49,10 @@ sudo dnf install -y mongodb-org && sudo dnf clean all
 
 
 
-# Edit the configuration file
+# Edit the configuration file, "net" session to listen at all addresses
 sudo vim /etc/mongod.conf
 
 "
-coment or delete the line 'bindIp: ...'
-add just below, in the same indentation 'bindIpAll: true' like this:
-
-# network interfaces
 net:
   port: 27017
   bindIpAll: true
