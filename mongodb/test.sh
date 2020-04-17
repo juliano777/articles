@@ -258,7 +258,9 @@ db.person.find()
 # Test workers nodes
 for i in ${NODE[@]}
 do
+  echo "[ ${i} ]"
   mongo \
+    --quiet \
     -u user_test \
     -p ${USER_PASSWD} \
     ${i}/db_test << EOF
