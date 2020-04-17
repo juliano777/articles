@@ -163,6 +163,9 @@ sudo vim /etc/mongod.conf
 security:
   authorization: enabled
   keyFile: /var/lib/mongo/security/keyfile
+
+replication:
+  replSetName: 'rs0'  
 "
 
 
@@ -183,7 +186,7 @@ done
 
 
 
-#Start MongoDB service at the master node
+# Start MongoDB service at the master node
 sudo systemctl start mongod.service
 
 
