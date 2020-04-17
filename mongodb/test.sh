@@ -17,13 +17,13 @@ System group: mongod
 
 
 
-# Enmvironment variable for Mongo version
+# Enmvironment variable for Mongo version (default: 4.2)
 read -p 'Enter MongoDB version: ' MONGO_VERSION
 export MONGO_VERSION="${MONGO_VERSION:-4.2}"
 
 
 
-# Heredoc for Mongo repository file
+# Repository file creation
 cat << EOF > /tmp/mongodb-org-${MONGO_VERSION}.repo && \
 sudo mv /tmp/mongodb-org-${MONGO_VERSION}.repo /etc/yum.repos.d/ && \
 sudo chown root: /etc/yum.repos.d/mongodb-org-${MONGO_VERSION}.repo
