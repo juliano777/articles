@@ -87,12 +87,10 @@ mongo admin
 
 
 "
-use admin
-
 db.createUser(
     {
     user: 'admin',
-    pwd: passwordPrompt(), // or cleartext password
+    pwd: passwordPrompt(),
     roles: [ {role: 'root', db: 'admin' }, 'readWriteAnyDatabase']
     }
 )
