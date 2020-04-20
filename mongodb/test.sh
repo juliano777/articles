@@ -179,16 +179,16 @@ done
 
 
 
+# Start MongoDB service at the master node
+sudo systemctl start mongod.service
+
+
+
 # Restart worker nodes
 for i in ${NODE[@]}
 do
   ssh root@${i} 'systemctl restart mongod'  
 done
-
-
-
-# Start MongoDB service at the master node
-sudo systemctl start mongod.service
 
 
 
