@@ -202,7 +202,7 @@ mongo -u admin --eval 'rs.initiate()' -p ${ADMIN_PASSWD} admin
 
 
 
-# Restart worker nodes
+# Add worker nodes
 for i in ${NODE[@]};
 do
   mongo -u admin --eval "rs.add('${i}')" -p ${ADMIN_PASSWD} admin;
