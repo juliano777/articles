@@ -145,7 +145,7 @@ done
 
 
 # Script for send the keyfile to worker nodes
-for i in `seq 0 $((${#NODE[@]}-1))`; do
+for i in ${NODE[@]}; do
   echo -e "\n${NODE[$i]}\n"
   sudo rsync -av /var/lib/mongo/security root@${NODE[i]}:/var/lib/mongo/;
 done
