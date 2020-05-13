@@ -291,7 +291,6 @@ sudo chown `id -u`:`id -g` ~/.kube/config
 # Calico CNI plugin installation:
 
 wget -qO - https://docs.projectcalico.org/manifests/calico.yaml | \
-sed "s:192.168.0.0/16:${POD_CIDR}:g" | \
 kubectl apply -f -
 
 
