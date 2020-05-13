@@ -350,7 +350,7 @@ kubectl get nodes
 
 
 
-#
+# Namespace creation:
 
 kubectl create namespace nsfoo
 
