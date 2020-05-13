@@ -4,14 +4,20 @@
 
 # Install packages:
 
-sudo yum install -y \
-  yum-utils device-mapper-persistent-data lvm2 ebtables ethtool bash-completion
+sudo dnf install -y \
+  dnf-utils device-mapper-persistent-data lvm2 ebtables ethtool bash-completion
 
 
 
 # First of all we need Docker:
 
 wget -O - https://get.docker.com | sudo bash
+
+
+
+# If the previous attempt fails...:
+
+sudo dnf install --nobest -y docker-ce
 
 
 
