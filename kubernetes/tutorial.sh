@@ -95,7 +95,7 @@ EOF'
 
 # Update repository list;
 
-sudo yum repolist -y
+sudo dnf repolist -y
 
 
 
@@ -135,13 +135,13 @@ EOF'
 
 # Packages of Kubernetes to install:
 
-sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+sudo dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 
 
 
 # Clean up downloaded packages:
 
-sudo yum clean all
+sudo dnf clean all
 
 
 
