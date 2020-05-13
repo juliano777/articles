@@ -191,9 +191,11 @@ sudo systemctl daemon-reload
 
 #
 
-sudo bash -c 'cat << EOF > /etc/default/kubelet
+sudo bash -c '
+cat << EOF > /etc/default/kubelet
 KUBELET_EXTRA_ARGS='--cgroup-driver=systemd'
-EOF'
+EOF
+'
 
 
 
@@ -270,7 +272,13 @@ mkdir ~/.kube
 
 # Copy admin.conf file and give the properly ownership:
 
-sudo bash -c "cat /etc/kubernetes/admin.conf > ~`whoami`/.kube/config"
+sudo bash -c "
+cat /etc/kubernetes/admin.conf > ~`whoami`/.kube/config
+"
+
+
+
+# Change user and group owner:
 
 sudo chown `id -u`:`id -g` ~/.kube/config
 
