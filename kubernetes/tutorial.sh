@@ -291,8 +291,8 @@ read -p 'Enter Calico version (X.Y): ' CALICO_VERSION
 
 # Calico CNI plugin installation:
 
-wget -qO - https://docs.projectcalico.org/v${CALICO_VERSION}/\
-manifests/calico.yaml | sed "s:192.168.0.0/16:${POD_CIDR}:g" | \
+wget -qO - https://docs.projectcalico.org/manifests/calico.yaml | \
+sed "s:192.168.0.0/16:${POD_CIDR}:g" | \
 kubectl apply -f -
 
 
