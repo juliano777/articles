@@ -225,6 +225,11 @@ SERVICE_CIDR
 
 
 
+# if the answer was null...:
+export SERVICE_CIDR="${SERVICE_CIDR:-10.96.0.0/12}"
+
+
+
 # Type your network POD network CIDR (X.X.X.X/X):
 
 read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
