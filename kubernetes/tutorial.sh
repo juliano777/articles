@@ -236,6 +236,11 @@ read -p 'Type your POD network CIDR (X.X.X.X/X): ' POD_CIDR
 
 
 
+# if the answer was null...:
+export POD_CIDR="${POD_CIDR:-192.168.0.0/16}"
+
+
+
 # Pull images used by kubeadm
 
 sudo kubeadm config images pull
