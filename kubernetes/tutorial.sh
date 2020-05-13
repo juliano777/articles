@@ -283,12 +283,6 @@ sudo chown `id -u`:`id -g` ~/.kube/config
 
 
 
-# Environment variable for Calico version (X.Y) :
-
-read -p 'Enter Calico version (X.Y): ' CALICO_VERSION
-
-
-
 # Calico CNI plugin installation:
 
 wget -qO - https://docs.projectcalico.org/manifests/calico.yaml | \
