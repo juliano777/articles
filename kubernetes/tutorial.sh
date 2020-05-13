@@ -63,14 +63,16 @@ sudo systemctl enable --now docker.service
 
 # File containing all modules necessary for k8s:
 
-sudo bash -c 'cat << EOF > /etc/modules-load.d/k8s.conf
+sudo bash -c '
+cat << EOF > /etc/modules-load.d/k8s.conf
 br_netfilter
 ip_vs_rr
 ip_vs_sh
 ip_vs
 ip_vs_wrr
 nf_conntrack-ipv4
-EOF'
+EOF
+'
 
 
 
