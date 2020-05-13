@@ -172,14 +172,14 @@ sudo mkdir -p /etc/systemd/system/kubelet.service.d
 
 # Create aditional file for service kubelet:
 
-sudo bash -c "
+sudo bash -c '
 cat << EOF > /etc/systemd/system/kubelet.service.d/11-cgroups.conf
 [Service]
 
 CPUAccounting=true
 MemoryAccounting=true
 EOF
-"
+'
 
 
 
