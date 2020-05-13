@@ -35,7 +35,8 @@ sudo mkdir /etc/docker
 
 # Setup Docker daemon:
 
-sudo bash -c 'cat << EOF > /etc/docker/daemon.json
+sudo bash -c '
+cat << EOF > /etc/docker/daemon.json
 {
   "experimental": false,
   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -49,7 +50,8 @@ sudo bash -c 'cat << EOF > /etc/docker/daemon.json
   ]
 }
 // "experimental" -> Enable if you want to test experimental features
-EOF'
+EOF
+'
 
 
 
@@ -80,7 +82,8 @@ sudo systemctl restart systemd-modules-load.service
 
 # Kubernetes repository file:
 
-sudo bash -c 'cat << EOF > /etc/yum.repos.d/kubernetes.repo
+sudo bash -c '
+cat << EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -89,7 +92,8 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg \
 https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF'
+EOF
+'
 
 
 
@@ -126,10 +130,12 @@ sudo setenforce 0
 
 # Sysctl properties:
 
-sudo bash -c 'cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
+sudo bash -c '
+cat << EOF > /etc/sysctl.d/k8s.conf && sysctl --system
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
-EOF'
+EOF
+'
 
 
 
@@ -158,9 +164,15 @@ source /etc/profile.d/kube{adm,ctl}.sh
 
 
 
+# Create aditional directory for service kubelet:
+
+sudo mkdir -p /etc/systemd/system/kubelet.service.d
+
+
+
 # Create aditional file for service kubelet:
 
-sudo bash -c "mkdir /etc/systemd/system/kubelet.service.d 2> /dev/null ; \
+sudo bash -c "
 cat << EOF > /etc/systemd/system/kubelet.service.d/11-cgroups.conf
 [Service]
 
