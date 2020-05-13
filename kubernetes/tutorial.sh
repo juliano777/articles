@@ -185,7 +185,7 @@ EOF
 
 
 
-# 
+# Reload systemd manager configuration
 
 sudo systemctl daemon-reload
 
