@@ -119,7 +119,7 @@ sudo systemctl disable --now firewalld
 
 # Disable Selinux:
 
-sudo sed 's/SELINUX=.ermissive/SELINUX=disabled/g' -i /etc/selinux/config && \
+sudo sed 's/SELINUX=.*/SELINUX=disabled/g' -i /etc/selinux/config && \
 setenforce 0
 
 
