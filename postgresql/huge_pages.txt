@@ -1,0 +1,148 @@
+HugePages
+
+	Quanto um processo usa uma porção de memória, a CPU marca a RAM como usada por esse processo. Por questão de eficiência, a CPU aloca espaços na RAM por pedaços de 4kb (o que é padrão em muitas plataformas). Esses pedaços são chamados de páginas e podem ser em disco também (swap).
+	Como endereços de processos são virtuais, a CPU e o sistema operacional têm que lembrar que página pertence a que processo, e onde ele está armazenado. Obviamente, quanto mais páginas tiver, mais tempo levará para encontrar onde a memória está mapeada.
+	Quando um processo usa 1 GB de memória, que são 262144 entradas para procurar (1 GB / 4 kb).
+	Atualmente, a maioria das arquiteturas de CPU suportam páginas maiores, o que faz com que CPU e SO tenham menos entradas para procurar.
+	Em Linux, isso é chamado de Huge Pages, em BSD Super Pages e no Windows Large Pages.
+
+HugePages no PostgreSQL
+
+	O suporte a HugePages no PostgreSQL iniciou-se na versão 9.4.
+
+	O parâmetro de configuração (postgresql.conf) para tal fim é o huge_pages, que aceita 3 (três) valores, que são eles: "try" (padrão), "on" e "off":
+
+	- try: tenta fazer uso de HugePages e se falhar volta à alocação de memória padrão;
+	- on: habilita o uso de HugePages, mas se falhar o serviço não subirá;
+	- off: faz com que o sistema utilize alocação de memória padrão.
+
+	Atualmente no PostgreSQL só está disponível no Linux, em outros sistemas operacionais o parâmetro huge_pages é ignorado.
+	Após alterar o parâmetro huge_pages é necessário reiniciar (restart) o serviço.
+
+
+
+	Para a prática a seguir, imagine um servidor PostgreSQL que já esteja em operação, mas que não ainda não tenha sido configurado o parâmetro huge_pages.
+	A priori, é interessante não habilitar huge_pages quando o servidor começa a entrar em operação, pois nas estatísticas do sistema operacional (Linux) podemos verificar qual foi o pico de utilização de memória para podermos dimensionar o tanto de memória a ser configurado.
+
+
+
+Variáveis de Ambiente para Cálculos e Configuração
+
+
+
+Tamanho de uma HugePage:
+
+# export HUGEPAGESIZE=`cat /proc/meminfo | fgrep Hugepagesize | awk '{print $2}'`
+
+	Essa variável armazena o tamanho (em kb) de uma HugePage.
+
+
+
+Process ID do PostgreSQL:
+
+# export PGPID=`su - postgres -c 'head -1 ${PGDATA}/postmaster.pid'`
+
+
+# ================== HUGE PAGES ============================
+
+sed "s:\(^#huge_pages.*\):\1\nhuge_pages = on:g" -i ${PGDATA}/postgresql.conf
+
+sudo su - postgres -c 'pg_ctl restart'
+
+export HUGEPAGESIZE=`cat /proc/meminfo | fgrep Hugepagesize | awk '{print $2}'`
+
+export HUGE_PAGES_TOTAL_KB=1334200
+
+export NR_HUGEPAGES=`echo "${HUGE_PAGES_TOTAL_KB} / ${HUGEPAGESIZE}" | bc`
+
+echo "vm.nr_hugepages = ${NR_HUGEPAGES}" >> /etc/sysctl.conf
+
+echo "vm.hugetlb_shm_group = `id -g postgres`" >> /etc/sysctl.conf
+
+sysctl -p
+
+cat << EOF | tr ' ' '\t' >> /etc/security/limits.conf 
+postgres hard memlock ${HUGE_PAGES_TOTAL_KB}
+postgres soft memlock ${HUGE_PAGES_TOTAL_KB}
+EOF
+
+	Captura do PID do processo principal do PostgreSQL que está na primeira linha do arquivo postmaster.pid.
+
+
+
+Pico de uso de memória:
+
+# export VMPEAK=`egrep ^VmPeak /proc/${PGPID}/status | awk '{print $2}'`
+
+	Essa variável de ambiente é extremamente importante, pois ela armazena qual foi o pico de utilização (em kb) até então. O que servirá de base para o ajuste de HugePages no sistema operacional para o PostgreSQL.
+
+
+
+Total de HugePages desejadas (pico + 20%):
+
+# export HUGE_PAGES_TOTAL_KB=`echo "(${VMPEAK} * 1.2) + 1" | bc | cut -f1 -d.`
+
+	O tamanho total (em kb) desejado, que é resultante do pico de utilização (antes de HugePages, com páginas normais), com um acréscimo de segurança de 20%, com valor arredondado para cima.
+
+
+
+Quantidade de HugePages:
+
+# export NR_HUGEPAGES=`echo "${HUGE_PAGES_TOTAL_KB} / ${HUGEPAGESIZE}" | bc`
+
+	A quantidade de páginas enormes (HugePages) é conseguida ao dividirmos o total de memória HugePages desejada pelo tamanho de uma HugePage.
+
+
+
+Modificações em /etc/sysctl.conf
+
+
+
+Número de HugePages:
+
+# echo "vm.nr_hugepages = ${NR_HUGEPAGES}" >> /etc/sysctl.conf
+
+
+
+Grupo de sistema postgres, que tem autorização para usar HugePages:
+
+# echo "vm.hugetlb_shm_group = `id -g postgres`" >> /etc/sysctl.conf
+
+
+
+Aplicando as configurações feitas em /etc/sysctl:
+
+# sysctl -p
+
+
+
+Modificações em /etc/security/limits.conf via heredoc de Shell Script:
+
+# cat << EOF | tr ' ' '\t' >> /etc/security/limits.conf 
+postgres hard memlock ${HUGE_PAGES_TOTAL_KB}
+postgres soft memlock ${HUGE_PAGES_TOTAL_KB}
+EOF
+
+
+
+	E por fim, modifique o arquivo postgresql.conf de seu servidor, o parâmetro huge_pages da seguinte forma:
+
+	huge_pages = on
+
+	Reinicie o PostgreSQL e então poderá fazer uso efetivamente de HugePages nesse excelente SGBD e agora com um desempenho melhor graças a esse recurso.
+
+
+
+https://en.wikipedia.org/wiki/Page_%28computer_memory%29#Page_size_trade-off
+
+http://lwn.net/Articles/423584/
+
+https://oracle-base.com/articles/linux/configuring-huge-pages-for-oracle-on-linux-64#configuring-1g-hugepagesize
+
+
+
+############################# FREEBSD ########################################
+
+
+sysctl hw.pagesize hw.pagesizes
+
