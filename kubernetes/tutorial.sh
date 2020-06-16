@@ -220,7 +220,7 @@ sudo systemctl enable kubelet
 # Type your service network CIDR (X.X.X.X/X, Default: "10.96.0.0/12") :
 
 read -p \
-'Type your service network CIDR (X.X.X.X/X, Default: "10.96.0.0/12"):' \
+'Type your service network CIDR (X.X.X.X/X, Default: "10.96.0.0/12"): ' \
 SERVICE_CIDR
 
 
