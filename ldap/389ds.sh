@@ -135,3 +135,6 @@ ldapsearch -xb 'dc=vb-08,dc=local'
 
 "
 Open up your preferred web browser and access the cockpit web interface by navigating to http://your_server_ip:9090."
+
+
+read -s MYPWD && pwdhash -s SSHA512 ${MYPWD}
