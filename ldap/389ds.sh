@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # sysctl configurations
 cat << EOF > /etc/sysctl.d/ldap_389ds.conf
 net.ipv4.tcp_keepalive_time = 300
@@ -8,7 +6,7 @@ EOF
 
 
 
-# Applay configurations
+# Apply configurations
 sysctl -p /etc/sysctl.d/*
 
 
@@ -51,37 +49,40 @@ dnf clean all
 
 
 
-# 
+# Interactive configuration
 dscreate interactive
 
 "
-Install Directory Server (interactive mode)
-===========================================
+Enter system's hostname [vb-08.local]: 
 
-Enter system's hostname [ldap.local]: vb-08.local
+Enter the instance name [vb-08]: 
 
-Enter the instance name [vb-08]: ldap01
+Enter port number [389]: 
 
-Enter port number [389]:
+Create self-signed certificate database [yes]: 
 
-Create self-signed certificate database [yes]: yes
+Enter secure port number [636]: 
 
-Enter secure port number [636]:
+Enter Directory Manager DN [cn=Directory Manager]: 
 
-Enter Directory Manager DN [cn=Directory Manager]:
+Enter the Directory Manager password: 
+Password must be at least 8 characters long
 
-Enter the Directory Manager password:
-Confirm the Directory Manager Password:
+Enter the Directory Manager password: 
+Password must be at least 8 characters long
 
-Enter the database suffix (or enter "none" to skip) [dc=vb-08,dc=local]:
+Enter the Directory Manager password: 
+Confirm the Directory Manager Password: 
 
-Create sample entries in the suffix [no]: yes
+Enter the database suffix (or enter "none" to skip) [dc=vb-08,dc=local]: 
 
-Do you want to start the instance after the installation? [yes]: yes
+Create sample entries in the suffix [no]: 
+
+Create just the top suffix entry [no]: yes
+
+Do you want to start the instance after the installation? [yes]: 
 
 Are you ready to install? [no]: yes
-Starting installation...
-Completed installation for ldap01
 "
 
 
@@ -138,3 +139,22 @@ Open up your preferred web browser and access the cockpit web interface by navig
 
 
 read -s MYPWD && pwdhash -s SSHA512 ${MYPWD}
+
+
+
+dsconf -D "cn=Directory Manager" ldap://vb-08.local plugin list | fgrep Member
+
+Enter password for cn=Directory Manager on ldap://vb-08.local: 
+Auto Membership Plugin
+MemberOf Plugin
+
+
+
+dsconf -D "cn=Directory Manager" ldap://vb-08.local plugin memberof enable
+Enter password for cn=Directory Manager on ldap://vb-08.local: 
+Enabled plugin 'MemberOf Plugin'
+
+
+systemctl restart dirsrv@vb-08.service
+
+ldapmodify -xh vb-08.local -D 'cn=Directory Manager' -W -f arquivo.ldif
