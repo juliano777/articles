@@ -158,3 +158,7 @@ Enabled plugin 'MemberOf Plugin'
 systemctl restart dirsrv@vb-08.service
 
 ldapmodify -xh vb-08.local -D 'cn=Directory Manager' -W -f arquivo.ldif
+
+https://www.golinuxcloud.com/ldap-client-rhel-centos-8/
+
+https://tylersguides.com/guides/configuring-ldap-authentication-on-centos-8/
