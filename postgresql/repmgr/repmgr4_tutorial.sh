@@ -140,9 +140,9 @@ host  replication  rep_teste  192.168.56.3/32 trust
 host  replication  rep_teste  192.168.56.4/32 trust
 host  replication  rep_teste  192.168.56.5/32 trust
 
-host    db_teste       user_teste  200.198.225.174/32      md5
-host    db_teste       user_teste  200.198.225.175/32      md5
-host    db_teste       user_teste  200.198.225.176/32      md5
+host    db_teste       user_teste  192.168.0.174/32      md5
+host    db_teste       user_teste  192.168.0.175/32      md5
+host    db_teste       user_teste  192.168.0.176/32      md5
 EOF
 
 
