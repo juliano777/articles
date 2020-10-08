@@ -118,28 +118,33 @@ EOF
 
 
 
-# Arquivo pg_hba.conf:
+# pg_hba.conf file:
 
 cat << EOF > ${PGDATA}/pg_hba.conf && pg_ctl reload
+# Local access
 local  all  all  trust
 host   all  all  127.0.0.1/32  trust
 host   all  all  ::1/128       trust
 
+# Main database
 host  db_teste  user_teste  192.168.56.2/32 trust
 host  db_teste  user_teste  192.168.56.3/32 trust
 host  db_teste  user_teste  192.168.56.4/32 trust
 host  db_teste  user_teste  192.168.56.5/32 trust
 
+# repmgr database
 host  db_repmgr  rep_teste  192.168.56.2/32 trust
 host  db_repmgr  rep_teste  192.168.56.3/32 trust
 host  db_repmgr  rep_teste  192.168.56.4/32 trust
 host  db_repmgr  rep_teste  192.168.56.5/32 trust
 
+# Replication
 host  replication  rep_teste  192.168.56.2/32 trust
 host  replication  rep_teste  192.168.56.3/32 trust
 host  replication  rep_teste  192.168.56.4/32 trust
 host  replication  rep_teste  192.168.56.5/32 trust
 
+# Application access to main database
 host    db_teste       user_teste  192.168.0.174/32      md5
 host    db_teste       user_teste  192.168.0.175/32      md5
 host    db_teste       user_teste  192.168.0.176/32      md5
