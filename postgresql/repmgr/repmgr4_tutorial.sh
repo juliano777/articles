@@ -50,7 +50,7 @@ PIDFile=/var/run/repmgr/repmgrd.pid
 # This is normally controlled by the global default set by systemd
 # StandardOutput=syslog
 ExecStart=/usr/local/pgsql/12/bin/repmgrd \
--f /etc/repmgr/repmgr.conf -p /var/run/repmgr/repmgrd.pid -d --verbose
+-f /etc/repmgr.conf -p /var/run/repmgr/repmgrd.pid -d --verbose
 ExecStop=kill -TERM \`cat /var/run/repmgr/repmgrd.pid\`
 ExecReload=kill -HUP \`cat /var/run/repmgr/repmgrd.pid\`
 
@@ -91,8 +91,8 @@ read -p 'Digite o ID do nó: ' NODEID
 
 # Criação do arquivo principal do repmgr:
 
-cat << EOF > /etc/repmgr/repmgr.conf && \
-chown postgres: /etc/repmgr/repmgr.conf
+cat << EOF > /etc/repmgr.conf && \
+chown postgres: /etc/repmgr.conf
 node_id=${NODEID}
 node_name=`hostname`
 conninfo='host=`hostname` user=rep_teste dbname=db_repmgr\
@@ -106,9 +106,9 @@ witness_sync_interval=15
 # repmgrd
 failover=automatic
 promote_command='/usr/local/pgsql/12/bin/repmgr standby promote\
- -f /etc/repmgr/repmgr.conf --log-to-file'
+ -f /etc/repmgr.conf --log-to-file'
 follow_command='/usr/local/pgsql/12/bin/repmgr standby follow\
- -f /etc/repmgr/repmgr.conf --log-to-file --upstream-node-id=%n'
+ -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n'
 
 # Log
 log_level=INFO
@@ -185,7 +185,7 @@ EOF
 
 # Registrar o nó como primário:
 
-repmgr -f /etc/repmgr/repmgr.conf primary register
+repmgr -f /etc/repmgr.conf primary register
 
 
 
@@ -198,7 +198,7 @@ psql -c 'ALTER TABLE repmgr.monitoring_history SET UNLOGGED;'\
 
 # Exibir informações do cluster:
 
-repmgr -f /etc/repmgr/repmgr.conf cluster show
+repmgr -f /etc/repmgr.conf cluster show
 
 '
  ID | Name         | Role    | Status    | Upstream | Location | Connection string                                                      
@@ -224,7 +224,7 @@ priority         | 100
 conninfo         | host=pghost04 user=rep_teste dbname=db_repmgr connect_timeout=2
 repluser         | rep_teste
 slot_name        | repmgr_slot_1
-config_file      | /etc/repmgr/repmgr.conf
+config_file      | /etc/repmgr.conf
 '
 
 
@@ -244,7 +244,7 @@ pg_ctl stop
 # Antes de clonar o nó primário, fazer teste com a opção --dry-run:
 
 repmgr -h pghost04 -U rep_teste -d db_repmgr\
- -f /etc/repmgr/repmgr.conf standby clone --dry-run
+ -f /etc/repmgr.conf standby clone --dry-run
 
 '
 NOTICE: destination directory "/var/local/pgsql/data" provided
@@ -276,7 +276,7 @@ rm -fr /var/local/pgsql/ts/index/*
 # Clonagem do nó primário:
 
 repmgr -h pghost04 -U rep_teste -d db_repmgr\
- -f /etc/repmgr/repmgr.conf standby clone
+ -f /etc/repmgr.conf standby clone
 
 
 
@@ -294,7 +294,7 @@ pg_ctl start
 
 # Registrando o nó como standby:
 
-repmgr -f /etc/repmgr/repmgr.conf standby register
+repmgr -f /etc/repmgr.conf standby register
 
 
 
@@ -330,7 +330,7 @@ EOF
 
 # Registrando o nó como witness:
 
-repmgr -f /etc/repmgr/repmgr.conf witness register -h pghost04
+repmgr -f /etc/repmgr.conf witness register -h pghost04
 
 
 ##############################################################################
@@ -348,8 +348,8 @@ shared_preload_libraries = 'repmgr'
 
 '
 failover=automatic
-promote_command='/usr/local/pgsql/12/bin/repmgr standby promote -f /etc/repmgr/repmgr.conf --log-to-file'
-follow_command='/usr/local/pgsql/12/bin/repmgr standby follow -f /etc/repmgr/repmgr.conf --log-to-file --upstream-node-id=%n'
+promote_command='/usr/local/pgsql/12/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file'
+follow_command='/usr/local/pgsql/12/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n'
 '
 
 
@@ -370,7 +370,7 @@ repmgr node rejoin -d 'host=pghost05 user=rep_teste dbname=db_repmgr connect_tim
 
 pg_ctl restart
 
-repmgr -f /etc/repmgr/repmgr.conf standby switchover
+repmgr -f /etc/repmgr.conf standby switchover
 
 # Todos
 
@@ -386,18 +386,18 @@ su - postgres -c "psql -c 'CREATE DATABASE db_repmgr OWNER rep_teste;'"
 
 # Registrar o nó como primário:
 
-repmgr -f /etc/repmgr/repmgr.conf primary register
+repmgr -f /etc/repmgr.conf primary register
 
 
 
 # Registrando o nó como standby:
 
-repmgr -f /etc/repmgr/repmgr.conf standby register
+repmgr -f /etc/repmgr.conf standby register
 
 
 # Registrando o nó como witness:
 
-repmgr -f /etc/repmgr/repmgr.conf witness register -h pghost04
+repmgr -f /etc/repmgr.conf witness register -h pghost04
 
 
 
@@ -413,7 +413,7 @@ outros nós standbys e ao fazer o processo de failover eles ainda não seguem o
 nó primário inicial.
 É preciso fazer com que sigam o novo master, senão a replicação fica cascateada.
 
-repmgr -f /etc/repmgr/repmgr.conf standby unregister
+repmgr -f /etc/repmgr.conf standby unregister
 
 pg_ctl stop
 
@@ -421,7 +421,7 @@ repmgr node rejoin -d 'host=pghost04 user=rep_teste dbname=db_repmgr connect_tim
 
 pg_ctl start
 
-repmgr -Ff /etc/repmgr/repmgr.conf standby register
+repmgr -Ff /etc/repmgr.conf standby register
 
 
 
