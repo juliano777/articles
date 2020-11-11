@@ -13,6 +13,9 @@ The crosstab function receives an SQL SELECT command as a parameter, which must 
 If we think of our pivot table as a two-dimensional array, then the first SELECT column is the first array dimension, the second SELECT column is the second dimension, and the third is the array element value.like grid [first_column_value, second_column_value] = third_column_value.
 */
 
+CREATE EXTENSION tablefunc;
+
+
 CREATE TABLE tb_gastos_viagem (
     id_ int GENERATED ALWAYS AS IDENTITY,
     dt timestamp,
