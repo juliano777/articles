@@ -1,6 +1,6 @@
 HugePages
 
-	Quanto um processo usa uma porção de memória, a CPU marca a RAM como usada por esse processo. Por questão de eficiência, a CPU aloca espaços na RAM por pedaços de 4kb (o que é padrão em muitas plataformas). Esses pedaços são chamados de páginas e podem ser em disco também (swap).
+	Quando um processo usa uma porção de memória, a CPU marca a RAM como usada por esse processo. Por questão de eficiência, a CPU aloca espaços na RAM por pedaços de 4kb (o que é padrão em muitas plataformas). Esses pedaços são chamados de páginas e podem ser em disco também (swap).
 	Como endereços de processos são virtuais, a CPU e o sistema operacional têm que lembrar que página pertence a que processo, e onde ele está armazenado. Obviamente, quanto mais páginas tiver, mais tempo levará para encontrar onde a memória está mapeada.
 	Quando um processo usa 1 GB de memória, que são 262144 entradas para procurar (1 GB / 4 kb).
 	Atualmente, a maioria das arquiteturas de CPU suportam páginas maiores, o que faz com que CPU e SO tenham menos entradas para procurar.
