@@ -1,0 +1,17 @@
+docker network create --driver bridge net_pg
+
+docker container run -itd \
+	--name pg \
+    --hostname pg.local \
+    --network net_pg \
+	-e POSTGRES_PASSWORD=123 \
+ 	-p 5432:5432 \
+	postgres
+
+docker container run -itd -p 80:80 \
+    --name pgadmin4 \
+    --hostname pgadmin4.local \
+    --network net_pg \
+    -e 'PGADMIN_DEFAULT_EMAIL=juliano777@gmail.com' \
+    -e 'PGADMIN_DEFAULT_PASSWORD=123' \
+    dpage/pgadmin4
