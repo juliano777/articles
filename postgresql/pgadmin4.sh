@@ -13,7 +13,7 @@ docker container run -itd \
 	postgres
 
 # Create a PgAdmin4 container
-docker container run -itd -p 80:80 \
+docker container run -itd -p 8080:80 \
     --name pgadmin4 \
     --hostname pgadmin4.local \
     --network net_pg \
@@ -36,7 +36,7 @@ podman container run -itd \
     docker.io/library/postgres
 
 # Create a PgAdmin4 container
-podman container run -itd -p 80:80 \
+podman container run -itd -p 8080:80 \
     --name pgadmin4 \
     --hostname pgadmin4.local \
     --network net_pg \
