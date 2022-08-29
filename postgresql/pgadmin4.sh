@@ -44,11 +44,3 @@ podman container run -itd -p 8080:80 \
     -e 'PGADMIN_DEFAULT_PASSWORD=123' \
     docker.io/dpage/pgadmin4
 
-# Create a Jupyter container
-podman run -itd \
-    -p 8888:8888 \
-    --name jupyter-notebook \
-    --hostname jupyter-notebook.local \
-    --network net_pg \
-    docker.io/jupyter/minimal-notebook
-
