@@ -28,7 +28,7 @@ podman network create --driver bridge net_pg
 
 # Create a Postgres container
 podman container run -itd \
-        --name pg \
+    --name pg \
     --hostname pg.local \
     --network net_pg \
     -e POSTGRES_PASSWORD=123 \
@@ -43,4 +43,3 @@ podman container run -itd -p 8080:80 \
     -e 'PGADMIN_DEFAULT_EMAIL=juliano777@gmail.com' \
     -e 'PGADMIN_DEFAULT_PASSWORD=123' \
     docker.io/dpage/pgadmin4
-
