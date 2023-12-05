@@ -110,8 +110,56 @@ AS sumario(
  Esmerivaldo Antunes |       70.00 |    1050.75 |    100.00 |     100.00
 */                    
                     
-                    
-                    
+SELECT                
+    tipo,
+    funcionario,
+    sum(valor) AS total
+FROM tb_gastos_viagem
+GROUP BY funcionario, tipo
+ORDER BY tipo;
+
+/*
+    tipo     |     funcionario     |  total  
+-------------+---------------------+---------
+ alimentacao | Averbina Santos     |   55.00
+ alimentacao | Berilia Caetano     |   85.00
+ alimentacao | Esmerivaldo Antunes |   70.00
+ hospedagem  | Averbina Santos     |  700.00
+ hospedagem  | Berilia Caetano     |  700.00
+ hospedagem  | Esmerivaldo Antunes | 1050.75
+ passagens   | Averbina Santos     |   30.00
+ passagens   | Berilia Caetano     |  150.00
+ passagens   | Esmerivaldo Antunes |  100.00
+ transporte  | Averbina Santos     |   30.00
+ transporte  | Berilia Caetano     |   15.00
+ transporte  | Esmerivaldo Antunes |  100.00
+ */
+
+SELECT * FROM crosstab
+($$
+SELECT 
+    tipo,              
+    funcionario,
+    sum(valor) AS total
+FROM tb_gastos_viagem
+GROUP BY funcionario, tipo
+ORDER BY tipo, funcionario
+$$)
+AS sumario (
+    tipo varchar(20),
+    "Averbina Santos" numeric(7, 2),
+    "Berilia Caetano" numeric(7, 2),
+    "Esmerivaldo Antunes" numeric(7, 2)
+);
+
+/*
+    tipo     | Averbina Santos | Berilia Caetano | Esmerivaldo Antunes 
+-------------+-----------------+-----------------+---------------------
+ alimentacao |           55.00 |           85.00 |               70.00
+ hospedagem  |          700.00 |          700.00 |             1050.75
+ passagens   |           30.00 |          150.00 |              100.00
+ transporte  |           30.00 |           15.00 |              100.00
+ */                   
                    
                     
     
