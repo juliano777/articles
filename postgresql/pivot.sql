@@ -83,20 +83,24 @@ SELECT
  */
 
 
-SELECT * FROM crosstab($$
-    SELECT
+SELECT * FROM crosstab
+($$
+SELECT
     funcionario,
     tipo,
     sum(valor) AS valor
-    FROM tb_gastos_viagem
-    GROUP BY funcionario, tipo
-    ORDER BY funcionario
-    $$) AS sumario(
-                    funcionario varchar(150),
-                    alimentacao numeric(7, 2),
-                    hospedagem numeric(7, 2),
-                    passagens numeric(7, 2),
-                    transporte numeric(7, 2));
+FROM tb_gastos_viagem
+GROUP BY funcionario, tipo
+ORDER BY funcionario
+$$)
+AS sumario(
+    funcionario varchar(150),
+    alimentacao numeric(7, 2),
+    hospedagem numeric(7, 2),
+    passagens numeric(7, 2),
+    transporte numeric(7, 2));
+
+
                     
 /*
      funcionario     | alimentacao | hospedagem | passagens | transporte 
