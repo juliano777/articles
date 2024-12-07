@@ -1,0 +1,13 @@
+https://github.com/lesovsky/pgcenter/releases
+
+
+
+dpkg -i pgcenter_0.9.2_linux_amd64.deb
+
+uso
+pgcenter top -U aluno -d db_bench
+
+e iniciem o pgbench
+pgbench -U aluno  -c 500 -t 10 -p 6432 db_bench
+
+assim verão o pgcenter em ação
