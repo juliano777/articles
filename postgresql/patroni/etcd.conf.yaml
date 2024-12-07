@@ -1,0 +1,20 @@
+name: "etcd1"
+data-dir: "/var/lib/etcd"
+
+listen-client-urls: http://0.0.0.0:2379
+advertise-client-urls: http://192.168.56.101:2379
+
+listen-peer-urls: http://0.0.0.0:2380
+initial-advertise-peer-urls: http://192.168.56.101:2380
+
+initial-cluster: "etcd1=http://192.168.56.101:2380,etcd2=http://192.168.56.102:2380,etcd3=http://192.168.56.103:2380"
+initial-cluster-token: "etcd-cluster-token"
+initial-cluster-state: "new"
+
+enable-authentication: true  
+experimental-features: "v3api"
+
+security:
+  auth-identity: "simple"
+  auth-token: "$MyP45sw0r6"
+  auth-token-ttl: 300
