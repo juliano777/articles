@@ -1,6 +1,5 @@
 # Articles
 
-[Spark](spark/README.md)  
 [Ansible](ansible/README.md)  
 [Cassandra](cassandra/README.md)  
 [Ceph](ceph/README.md)  
