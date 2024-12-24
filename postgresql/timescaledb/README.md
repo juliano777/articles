@@ -67,18 +67,10 @@ Agregações contínus são um tipo de hypertable que são atualizadas
 automaticamente em background conforme novos dados são adicionados ou ao
 modificar dados antigos.
 
+#### Funções especializadas em análises
 
-
-
-
-
-
-
-
-
-  
-
-
+Essas funções são chamadas de hyperfunctions, as quais executam consultas
+críticas em séries temporais para extrair informações significativas.
 
 
 ## Preparations in the operating system
@@ -94,7 +86,7 @@ Some examples of distributions are described, but the concepts can be applied
 to other distributions that are less well-know.
 
 **Regardless of the Linux distro...**
-&nbsp;
+
 Get the major version of PostgreSQL:
 ```bash
 PGMAJOR=`psql --version | awk '{print $(NF)}' | cut -f1 -d.`
