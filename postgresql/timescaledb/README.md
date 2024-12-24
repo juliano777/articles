@@ -3,27 +3,80 @@
 ## O que são séries temporais?
 
 São dados coletados em sequência, registrados ao longo do tempo e ordenados
-cronologicamente.
+cronologicamente.\
 Cada registro é um ponto de dado que representa um instante específico no
 tempo, normalmente com intervalos regulares. Dessa forma então torna facilita
 a análise de uma variável ao longo do tempo e identificar tendências, padrões
-e outras características. O que ajuda muito numa tomada de decisão.
+e outras características. O que ajuda muito numa tomada de decisão.\
+Uma série temporal tem basicamente dois elementos; o momento (tempo) e o valor
+naquele instante.\
 Resumidamente, é um conjunto de pontos de dados, em que cada um é associado
 a um momento único de tempo.
 
 ### Características principais de séries temporais
 
-- **Dependência temporal**
+- **Dependência temporal**\
   Não há independência de valores em uma série temporal. Para uma análise
   correta de um registro é preciso olhar para seus valores anteriores.
   Exemplo: o valor de uma ação em um determinado momento.
 
-- **Periodicidade**
+- **Periodicidade**\
   Pode acontecer de forma regular, como um sensor de temperatura de uma
   máquina que faz seus registros a cada minuto.
   Pode também acontecer de forma irregular, ou seja, não seguem um intervalo
-  fixo e previsível, são eventos registrados apenas quando ocorrem. Por
-  exemplo
+  fixo e previsível, são eventos registrados apenas quando ocorrem. Registros
+  de acesso é um exemplo disso.
+
+- **Ordem cronológica**\
+  A sequência dos registros é importante, bem como o dado de tempo é
+  indispensável, pois sem essa informação perde o sentido.
+
+## TimescaleDB o que é
+
+TimescaleDB é uma extensão criada e mantida pela
+[Timescale](https://www.timescale.com/).  
+É um projeto open-source, cuja licença é a Apache 2.0 e seu código-fonte está
+disponível no Github em 
+[https://github.com/timescale/timescaledb](https://github.com/timescale/timescaledb).\
+Seu objetivo é prover uma solução que possibilita cargas de trabalho de séries
+temporais, aumentando o desempenho de ingestão, armazenamento, consulta e
+análise.\
+Documentação oficial: [https://docs.timescale.com](https://docs.timescale.com/)
+
+### Características do TimescaleDB
+
+#### Particionamento de tabelas dinâmico e automatizado: hypertables
+
+Hypertables são tabelas PostgreSQL que particionam seus dados por tempo.\
+A forma de interação com esse tipo de tabela é igual a uma tabela comum do
+PostgreSQL, porém com recursos extras que tormam a forma de manejar dados de
+séries temporais de uma forma mais fácil e com uma performance melhor.
+
+#### Armazenamento híbrido linha-colunar
+
+Com esse recurso consegue-se até 95% de compressão em dados colunares. O que
+consequentemente economiza custos de armazenamento ao mesmo tempo que as
+consultas têm alta performance (muito mais do que o padrão).
+
+#### Agregações contínuas
+
+Dados de séries temporais crescem muito rápido e ao fazer agregações de dados 
+para sumarização pode se tornar algo muito devagar.\
+Com agregações contínuas faz com que essa tarefa se torne muito mais rápida.\
+Agregações contínus são um tipo de hypertable que são atualizadas
+automaticamente em background conforme novos dados são adicionados ou ao
+modificar dados antigos.
+
+
+
+
+
+
+
+
+
+
+  
 
 
 
