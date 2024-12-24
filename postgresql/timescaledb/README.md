@@ -1,5 +1,33 @@
 # TimescaleDB tutorial
 
+## O que são séries temporais?
+
+São dados coletados em sequência, registrados ao longo do tempo e ordenados
+cronologicamente.
+Cada registro é um ponto de dado que representa um instante específico no
+tempo, normalmente com intervalos regulares. Dessa forma então torna facilita
+a análise de uma variável ao longo do tempo e identificar tendências, padrões
+e outras características. O que ajuda muito numa tomada de decisão.
+Resumidamente, é um conjunto de pontos de dados, em que cada um é associado
+a um momento único de tempo.
+
+### Características principais de séries temporais
+
+- **Dependência temporal**
+  Não há independência de valores em uma série temporal. Para uma análise
+  correta de um registro é preciso olhar para seus valores anteriores.
+  Exemplo: o valor de uma ação em um determinado momento.
+
+- **Periodicidade**
+  Pode acontecer de forma regular, como um sensor de temperatura de uma
+  máquina que faz seus registros a cada minuto.
+  Pode também acontecer de forma irregular, ou seja, não seguem um intervalo
+  fixo e previsível, são eventos registrados apenas quando ocorrem. Por
+  exemplo
+
+
+
+
 ## Preparations in the operating system
 
 This tutorial will be guided by the assumption that your installation was via
