@@ -168,7 +168,7 @@ restart the PostgreSQL service:
 systemctl restart postgresql@${PGMAJOR}-main.service
 ```
 
-## Prática com comandos SQL
+## TimescaleDB practice (SQL commands)
 
 Creating the test database and then accessing it:
 ```bash
@@ -179,51 +179,76 @@ createdb db_timescale
 psql db_timescale
 ```
 
+Creating a new schema and enabling the TimescaleDB extension:
 ```sql
 -- Create a schema to organize the things
 CREATE SCHEMA sc_timescaledb;
 
--- ENABLE TimescaleDB extension on database within the new schema
+-- Enable TimescaleDB extension on database within the new schema
 CREATE EXTENSION IF NOT EXISTS timescaledb SCHEMA sc_timescaledb;
+```
 
-/*
-Criar uma tabela de séries temporais: Usaremos uma tabela chamada sensor_data para armazenar as leituras de temperatura e umidade.
-*/
+Creating tables:
+```sql
+-- Unlogged table as a data source for the normal table and the hypertable
+CREATE UNLOGGED TABLE ut_sensor_data (
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Timestamp
+    sensor_id INT NOT NULL,                 -- Sensor identifier
+    temperature numeric(3, 1),              -- Recorded temperature
+    humidity numeric(3, 1)                  -- Humidity recorded
+);
+
+-- Simple table
 CREATE TABLE tb_sensor_data (
-    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
-    sensor_id INT NOT NULL,      -- Identificador do sensor
-    temperature numeric(3, 1),           -- Temperatura registrada
-    humidity numeric(3, 1)               -- Umidade registrada
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Timestamp
+    sensor_id INT NOT NULL,                 -- Sensor identifier
+    temperature numeric(3, 1),              -- Recorded temperature
+    humidity numeric(3, 1)                  -- Humidity recorded
 );
 
+-- Hypertable (before transformation)
 CREATE TABLE tb_sensor_data_hyper (
-    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
-    sensor_id INT NOT NULL,      -- Identificador do sensor
-    temperature numeric(3, 1),           -- Temperatura registrada
-    humidity numeric(3, 1)               -- Umidade registrada
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Timestamp
+    sensor_id INT NOT NULL,                 -- Sensor identifier
+    temperature numeric(3, 1),              -- Recorded temperature
+    humidity numeric(3, 1)                  -- Humidity recorded
 );
 
 /*
-Transformar a tabela em uma hypertable: O TimescaleDB utiliza o conceito de hypertables, que particionam automaticamente os dados por tempo.
+Transform the table into a hypertable: TimescaleDB uses the concept of
+hypertables, which automatically partition data by time
 */
-SELECT sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletctiontime');
-
+SELECT
+  sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletctiontime');
+```
+```
          create_hypertable         
 -----------------------------------
  (1,public,tb_sensor_data_hyper,t)
+```
+
+Lets check the hypertable structure:
+```
+\d tb_sensor_data_hyper
+                     Table "public.tb_sensor_data_hyper"
+     Column      |           Type           | Collation | Nullable | Default 
+-----------------+--------------------------+-----------+----------+---------
+ colletctiontime | timestamp with time zone |           | not null | 
+ sensor_id       | integer                  |           | not null | 
+ temperature     | numeric(3,1)             |           |          | 
+ humidity        | numeric(3,1)             |           |          | 
+Indexes:
+    "tb_sensor_data_hyper_colletctiontime_idx" btree (colletctiontime DESC)
+Triggers:
+    ts_insert_blocker BEFORE INSERT ON tb_sensor_data_hyper FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker()
+```
+Notice that there is a index that was created after the transformation into
+hypertable.
 
 
-CREATE UNLOGGED TABLE ut_sensor_data (
-    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
-    sensor_id INT NOT NULL,      -- Identificador do sensor
-    temperature numeric(3, 1),           -- Temperatura registrada
-    humidity numeric(3, 1)               -- Umidade registrada
-);
-
-
-
-
-
+Creating the auxiliary functions:
+```sql
+-- Random integer number generator function
 CREATE OR REPLACE FUNCTION fc_randint(
     IN lower_lim int default 1,
     IN upper_lim int default 10,
@@ -244,7 +269,7 @@ END;
 $body$
 LANGUAGE plpgsql;
 
-
+-- Random float number generator function
 CREATE OR REPLACE FUNCTION fc_randfloat(
     IN lower_lim numeric default 0.1,
     IN upper_lim numeric default 10,
@@ -264,7 +289,11 @@ BEGIN
 END;
 $body$
 LANGUAGE plpgsql;
+``` 
 
+Creating the dummy data in unlogged table:
+```sql
+-- 50 million records
 INSERT INTO ut_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT
   ('2021-05-31 00:00:00'::timestamp + 
@@ -272,48 +301,46 @@ SELECT
   fc_randint(1, 10),  -- sensor_id
   fc_randfloat(20, 30),  -- temperature
   fc_randfloat(40, 70) -- humidity
-FROM generate_series(0, 49999999) as n;
+FROM generate_series(1, 50000000) as n;
+```
 
+Ingesting the data on tables (from unlogged table):
+```sql
+-- Enabling timer of statements
 \timing on
 
+-- Inserting data into the hypertable
 INSERT INTO tb_sensor_data_hyper (colletctiontime, sensor_id, temperature, humidity)
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
 
-
-
+-- Inserting data into the normal table
 INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
+```
 
-
-
-select pg_size_pretty(sum(pg_relation_size(inhrelid::regclass))) from pg_inherits where inhparent='tb_sensor_data_hyper'::regclass;
-
-
-
-
-
-
-\d tb_sensor_data
-                       Table "public.tb_sensor_data"
-     Column     |           Type           | Collation | Nullable | Default
-----------------+--------------------------+-----------+----------+---------
- colletctiontime | timestamp with time zone |           | not null |
- sensor_id      | integer                  |           | not null |
- temperature    | double precision         |           |          |
- humidity       | double precision         |           |          |
+Lets check the hypertable structure again:
+```
+\d tb_sensor_data_hyper
+                     Table "public.tb_sensor_data_hyper"
+     Column      |           Type           | Collation | Nullable | Default 
+-----------------+--------------------------+-----------+----------+---------
+ colletctiontime | timestamp with time zone |           | not null | 
+ sensor_id       | integer                  |           | not null | 
+ temperature     | numeric(3,1)             |           |          | 
+ humidity        | numeric(3,1)             |           |          | 
 Indexes:
-    "tb_sensor_data_colletctiontime_idx" btree (colletctiontime DESC)
+    "tb_sensor_data_hyper_colletctiontime_idx" btree (colletctiontime DESC)
 Triggers:
-    ts_insert_blocker BEFORE INSERT ON tb_sensor_data FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker()
+    ts_insert_blocker BEFORE INSERT ON tb_sensor_data_hyper FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker()
+Number of child tables: 84 (Use \d+ to list them.)
+```
+Notice that now there are child tables.\
+It was due to automatic partitioning.
 
--- Insert some data
-INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
-VALUES
-('2024-12-24 08:00:00', 1, 22.5, 60.0),
-('2024-12-24 08:01:00', 1, 22.6, 59.8),
-('2024-12-24 08:02:00', 1, 22.7, 59.5);
+<!-- select pg_size_pretty(sum(pg_relation_size(inhrelid::regclass))) from pg_inherits where inhparent='tb_sensor_data_hyper'::regclass; -->
+
 
 -- Obter todas as leituras de um intervalo de tempo:
 
@@ -395,20 +422,3 @@ hyperfunctions.\
 Por fim o fator escalabilidade, devido ao particionamento automático das
 hypertables, a extensão TimescaleDB gerencia dados históricos de forma
 eficiente.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
