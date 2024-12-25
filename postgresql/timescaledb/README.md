@@ -72,6 +72,18 @@ modificar dados antigos.
 Essas funções são chamadas de hyperfunctions, as quais executam consultas
 críticas em séries temporais para extrair informações significativas.
 
+### Hypertables vs tabelas comuns
+
+Normalmente a ingestão de dados em uma hypertable vai ser mais demorada do que
+uma tabela comum. Isso se deve a tarefas e processamentos a mais que têm que
+serem feitos, tais como particionamento automático, indexação automática no
+campo de tempo, triggers internos além de compressões e agregações contínuas.\
+Apesar de uma tabela comum ser mais rápida para uma ingestão inicial, uma
+hypertable acaba sendo muito melhor em outros aspectos; consultas em
+intervalos de tempo devido ao seu particionamento, gestão de dados históricos
+ao se valer de compressão e políticas de retenção automatizadas e por fim a
+escalabilidade, o que é ideal para bilhões de registros sem degradar
+significativamente o desempenho.
 
 ## Preparations in the operating system
 
@@ -168,24 +180,24 @@ psql db_timescale
 ```
 
 ```sql
--- Create
+-- Create a schema to organize the things
 CREATE SCHEMA sc_timescaledb;
 
--- ENABLE TimescaleDB extension on database
+-- ENABLE TimescaleDB extension on database within the new schema
 CREATE EXTENSION IF NOT EXISTS timescaledb SCHEMA sc_timescaledb;
 
 /*
 Criar uma tabela de séries temporais: Usaremos uma tabela chamada sensor_data para armazenar as leituras de temperatura e umidade.
 */
 CREATE TABLE tb_sensor_data (
-    colletciontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
     sensor_id INT NOT NULL,      -- Identificador do sensor
     temperature numeric(3, 1),           -- Temperatura registrada
     humidity numeric(3, 1)               -- Umidade registrada
 );
 
 CREATE TABLE tb_sensor_data_hyper (
-    colletciontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
     sensor_id INT NOT NULL,      -- Identificador do sensor
     temperature numeric(3, 1),           -- Temperatura registrada
     humidity numeric(3, 1)               -- Umidade registrada
@@ -194,7 +206,7 @@ CREATE TABLE tb_sensor_data_hyper (
 /*
 Transformar a tabela em uma hypertable: O TimescaleDB utiliza o conceito de hypertables, que particionam automaticamente os dados por tempo.
 */
-SELECT sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletciontime');
+SELECT sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletctiontime');
 
          create_hypertable         
 -----------------------------------
@@ -202,7 +214,7 @@ SELECT sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletciontime'
 
 
 CREATE UNLOGGED TABLE ut_sensor_data (
-    colletciontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
+    colletctiontime TIMESTAMPTZ NOT NULL,   -- Marca temporal
     sensor_id INT NOT NULL,      -- Identificador do sensor
     temperature numeric(3, 1),           -- Temperatura registrada
     humidity numeric(3, 1)               -- Umidade registrada
@@ -253,27 +265,30 @@ END;
 $body$
 LANGUAGE plpgsql;
 
-INSERT INTO ut_sensor_data (colletciontime, sensor_id, temperature, humidity)
+INSERT INTO ut_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT
   ('2021-05-31 00:00:00'::timestamp + 
-    (n * '1 second'::interval)),  -- colletciontime
+    (n * '1 second'::interval)),  -- colletctiontime
   fc_randint(1, 10),  -- sensor_id
   fc_randfloat(20, 30),  -- temperature
   fc_randfloat(40, 70) -- humidity
-FROM generate_series(0, 9999999) as n;
+FROM generate_series(0, 49999999) as n;
 
 \timing on
 
-INSERT INTO tb_sensor_data_hyper (colletciontime, sensor_id, temperature, humidity)
-SELECT  colletciontime, sensor_id, temperature, humidity
+INSERT INTO tb_sensor_data_hyper (colletctiontime, sensor_id, temperature, humidity)
+SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
 
-Time: 21996.522 ms (00:21.997)
 
-INSERT INTO tb_sensor_data (colletciontime, sensor_id, temperature, humidity)
-SELECT  colletciontime, sensor_id, temperature, humidity
+
+INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
+SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
 
+
+
+select pg_size_pretty(sum(pg_relation_size(inhrelid::regclass))) from pg_inherits where inhparent='tb_sensor_data_hyper'::regclass;
 
 
 
@@ -284,17 +299,17 @@ FROM ut_sensor_data;
                        Table "public.tb_sensor_data"
      Column     |           Type           | Collation | Nullable | Default
 ----------------+--------------------------+-----------+----------+---------
- colletciontime | timestamp with time zone |           | not null |
+ colletctiontime | timestamp with time zone |           | not null |
  sensor_id      | integer                  |           | not null |
  temperature    | double precision         |           |          |
  humidity       | double precision         |           |          |
 Indexes:
-    "tb_sensor_data_colletciontime_idx" btree (colletciontime DESC)
+    "tb_sensor_data_colletctiontime_idx" btree (colletctiontime DESC)
 Triggers:
     ts_insert_blocker BEFORE INSERT ON tb_sensor_data FOR EACH ROW EXECUTE FUNCTION _timescaledb_functions.insert_blocker()
 
 -- Insert some data
-INSERT INTO tb_sensor_data (colletciontime, sensor_id, temperature, humidity)
+INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 VALUES
 ('2024-12-24 08:00:00', 1, 22.5, 60.0),
 ('2024-12-24 08:01:00', 1, 22.6, 59.8),
@@ -304,25 +319,25 @@ VALUES
 
 SELECT count(*)
 FROM tb_sensor_data_hyper
-WHERE colletciontime >= '2021-06-01 08:00:00'
-  AND colletciontime <= '2021-07-10 08:02:00';
+WHERE colletctiontime >= '2021-06-01 08:00:00'
+  AND colletctiontime <= '2021-07-10 08:02:00';
 
 SELECT count(*)
 FROM tb_sensor_data
-WHERE colletciontime >= '2021-06-01 08:00:00'
-  AND colletciontime <= '2021-07-10 08:02:00';
+WHERE colletctiontime >= '2021-06-01 08:00:00'
+  AND colletctiontime <= '2021-07-10 08:02:00';
 
 -- Calcular a média de temperatura em um intervalo:
 
 SELECT AVG(temperature) AS avg_temperature
 FROM tb_sensor_data_hyper
-WHERE colletciontime >= '2021-06-01 08:00:00'
-  AND colletciontime <= '2021-07-10 08:02:00';
+WHERE colletctiontime >= '2021-06-01 08:00:00'
+  AND colletctiontime <= '2021-07-10 08:02:00';
 
 SELECT AVG(temperature) AS avg_temperature
 FROM tb_sensor_data
-WHERE colletciontime >= '2021-06-01 08:00:00'
-  AND colletciontime <= '2021-07-10 08:02:00';
+WHERE colletctiontime >= '2021-06-01 08:00:00'
+  AND colletctiontime <= '2021-07-10 08:02:00';
 
 -- Detectar tendências (valores anômalos): Identificar temperaturas acima de 25°C.
 
@@ -334,7 +349,7 @@ WHERE temperature > 25.0;
 
 CREATE MATERIALIZED VIEW hourly_avg_temperature
 WITH (timescaledb.continuous) AS
-SELECT sc_timescaledb.time_bucket('1 hour', colletciontime) AS hour,
+SELECT sc_timescaledb.time_bucket('1 hour', colletctiontime) AS hour,
        AVG(temperature) AS avg_temperature
 FROM tb_sensor_data_hyper
 GROUP BY hour;
