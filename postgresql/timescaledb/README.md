@@ -339,6 +339,31 @@ SELECT sc_timescaledb.time_bucket('1 hour', colletciontime) AS hour,
 FROM tb_sensor_data_hyper
 GROUP BY hour;
 
+
+SELECT sc_timescaledb.show_chunks('tb_sensor_data_hyper', older_than => INTERVAL '3 days');
+               show_chunks               
+-----------------------------------------
+ _timescaledb_internal._hyper_1_55_chunk
+ _timescaledb_internal._hyper_1_56_chunk
+ _timescaledb_internal._hyper_1_57_chunk
+ _timescaledb_internal._hyper_1_58_chunk
+ _timescaledb_internal._hyper_1_59_chunk
+ _timescaledb_internal._hyper_1_60_chunk
+ _timescaledb_internal._hyper_1_61_chunk
+ _timescaledb_internal._hyper_1_62_chunk
+ _timescaledb_internal._hyper_1_63_chunk
+ _timescaledb_internal._hyper_1_64_chunk
+ _timescaledb_internal._hyper_1_65_chunk
+ _timescaledb_internal._hyper_1_66_chunk
+ _timescaledb_internal._hyper_1_67_chunk
+ _timescaledb_internal._hyper_1_68_chunk
+ _timescaledb_internal._hyper_1_69_chunk
+ _timescaledb_internal._hyper_1_70_chunk
+ _timescaledb_internal._hyper_1_71_chunk
+ _timescaledb_internal._hyper_1_72_chunk
+(18 rows)
+
+
 -- Agora, você pode consultar a visualização:
 
 SELECT * FROM hourly_avg_temperature
