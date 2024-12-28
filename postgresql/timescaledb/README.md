@@ -160,7 +160,7 @@ apt install -y postgresql-${PGMAJOR}-timescaledb
 
 As explained previously, change the `postgresql.conf` file of your instance:
 ```bash
-vim /etc/postgresql/${PGMAJOR}/main/postgresql.conf/postgresql.conf
+vim /etc/postgresql/${PGMAJOR}/main/postgresql.conf
 ```
 
 restart the PostgreSQL service:
