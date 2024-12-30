@@ -348,14 +348,18 @@ Ingesting the data on tables (from unlogged table):
 INSERT INTO tb_sensor_data_hyper (colletctiontime, sensor_id, temperature, humidity)
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
-
--- Time: 589139.087 ms (09:49.139)
-
+```
+```
+Time: 589139.087 ms (09:49.139)
+```
+```sql
 -- Inserting data into the normal table
 INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
--- Time: 684402.479 ms (11:24.402)
+```
+```
+Time: 684402.479 ms (11:24.402)
 ```
 
 
