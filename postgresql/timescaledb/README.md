@@ -386,18 +386,93 @@ FROM pg_inherits
 WHERE inhparent = 'tb_sensor_data_hyper'::regclass;
 -->
 
+SELECT min(colletctiontime) FROM tb_sensor_data_hyper;
+          min           
+------------------------
+ 2021-05-31 00:00:01+00
+
+
+SELECT max(colletctiontime) FROM tb_sensor_data_hyper;
+          max           
+------------------------
+ 2024-07-31 09:46:40+00
+
+
+TABLE tb_sensor_data_hyper LIMIT 10;
+    colletctiontime     | sensor_id | temperature | humidity 
+------------------------+-----------+-------------+----------
+ 2021-05-31 00:00:01+00 |         3 |        27.2 |     49.6
+ 2021-05-31 00:00:02+00 |         2 |        25.1 |     65.8
+ 2021-05-31 00:00:03+00 |         3 |        25.5 |     50.7
+ 2021-05-31 00:00:04+00 |         6 |        25.1 |     64.8
+ 2021-05-31 00:00:05+00 |         2 |        21.0 |     49.2
+ 2021-05-31 00:00:06+00 |         6 |        23.1 |     52.7
+ 2021-05-31 00:00:07+00 |         7 |        21.0 |     52.6
+ 2021-05-31 00:00:08+00 |         4 |        21.8 |     60.2
+ 2021-05-31 00:00:09+00 |         6 |        28.6 |     64.5
+ 2021-05-31 00:00:10+00 |         9 |        26.1 |     41.5
+
+
+
 
 -- Obter todas as leituras de um intervalo de tempo:
 
+EXPLAIN ANALYZE
 SELECT count(*)
 FROM tb_sensor_data_hyper
 WHERE colletctiontime >= '2021-06-01 08:00:00'
-  AND colletctiontime <= '2021-07-10 08:02:00';
+  AND colletctiontime <= '2023-07-10 08:02:00';
 
+                                                                                       QUERY PLAN                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=1106536.12..1106536.14 rows=1 width=8) (actual time=5179.069..5240.868 rows=1 loops=1)
+   ->  Gather  (cost=1106535.91..1106536.12 rows=2 width=8) (actual time=5178.678..5240.862 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate  (cost=1105535.91..1105535.92 rows=1 width=8) (actual time=5169.974..5169.990 rows=1 loops=3)
+               ->  Parallel Append  (cost=0.00..1036325.29 rows=27684248 width=0) (actual time=3.289..4279.460 rows=22147240 loops=3)
+                     ->  Parallel Seq Scan on _hyper_1_10_chunk  (cost=0.00..8126.00 rows=252000 width=0) (actual time=0.066..87.124 rows=604800 loops=1)
+                           Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
+                     ->  Parallel Seq Scan on _hyper_1_17_chunk  (cost=0.00..8126.00 rows=252000 width=0) (actual time=0.045..89.253 rows=604800 loops=1)
+                           Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
+                     ->  Parallel Seq Scan on _hyper_1_20_chunk  (cost=0.00..8126.00 rows=252000 width=0) (actual time=0.053..81.966 rows=604800 loops=1)
+                           Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
+
+                     . . .
+                     ->  Parallel Seq Scan on _hyper_1_1_chunk  (cost=0.00..4149.05 rows=84494 width=0) (actual time=9.754..32.278 rows=144000 loops=1)
+                           Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
+                           Rows Removed by Filter: 115199
+ Planning Time: 52.394 ms
+ Execution Time: 5241.818 ms
+
+
+
+
+EXPLAIN ANALYZE
 SELECT count(*)
 FROM tb_sensor_data
 WHERE colletctiontime >= '2021-06-01 08:00:00'
-  AND colletctiontime <= '2021-07-10 08:02:00';
+  AND colletctiontime <= '2023-07-10 08:02:00';
+
+                                                                                    QUERY PLAN                                                                                     
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=1413410.67..1413410.68 rows=1 width=8) (actual time=3485.281..3495.966 rows=1 loops=1)
+   ->  Gather  (cost=1413410.45..1413410.66 rows=2 width=8) (actual time=3485.179..3495.959 rows=3 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Partial Aggregate  (cost=1412410.45..1412410.46 rows=1 width=8) (actual time=3479.928..3479.928 rows=1 loops=3)
+               ->  Parallel Seq Scan on tb_sensor_data  (cost=0.00..1343347.50 rows=27625181 width=0) (actual time=2.388..2640.744 rows=22147240 loops=3)
+                     Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
+                     Rows Removed by Filter: 11186093
+ Planning Time: 0.162 ms
+ Execution Time: 3496.000 ms  
+
+
+
+
+
+
+
 
 -- Calcular a média de temperatura em um intervalo:
 
