@@ -415,14 +415,16 @@ TABLE tb_sensor_data_hyper LIMIT 10;
 
 
 
--- Obter todas as leituras de um intervalo de tempo:
+-- Obter a contagem de todas as leituras de um intervalo de tempo:
 
+```sql
 EXPLAIN ANALYZE
 SELECT count(*)
 FROM tb_sensor_data_hyper
 WHERE colletctiontime >= '2021-06-01 08:00:00'
   AND colletctiontime <= '2023-07-10 08:02:00';
-
+```
+```
                                                                                        QUERY PLAN                                                                                        
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  Finalize Aggregate  (cost=1106536.12..1106536.14 rows=1 width=8) (actual time=5179.069..5240.868 rows=1 loops=1)
@@ -444,16 +446,16 @@ WHERE colletctiontime >= '2021-06-01 08:00:00'
                            Rows Removed by Filter: 115199
  Planning Time: 52.394 ms
  Execution Time: 5241.818 ms
+```
 
-
-
-
+```sql 
 EXPLAIN ANALYZE
 SELECT count(*)
 FROM tb_sensor_data
 WHERE colletctiontime >= '2021-06-01 08:00:00'
   AND colletctiontime <= '2023-07-10 08:02:00';
-
+```
+```
                                                                                     QUERY PLAN                                                                                     
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  Finalize Aggregate  (cost=1413410.67..1413410.68 rows=1 width=8) (actual time=3485.281..3495.966 rows=1 loops=1)
@@ -465,17 +467,12 @@ WHERE colletctiontime >= '2021-06-01 08:00:00'
                      Filter: ((colletctiontime >= '2021-06-01 08:00:00+00'::timestamp with time zone) AND (colletctiontime <= '2023-07-10 08:02:00+00'::timestamp with time zone))
                      Rows Removed by Filter: 11186093
  Planning Time: 0.162 ms
- Execution Time: 3496.000 ms  
-
-
-
-
-
-
-
+ Execution Time: 3496.000 ms
+```
 
 -- Calcular a média de temperatura em um intervalo:
 
+```sql
 SELECT AVG(temperature) AS avg_temperature
 FROM tb_sensor_data_hyper
 WHERE colletctiontime >= '2021-06-01 08:00:00'
@@ -485,24 +482,31 @@ SELECT AVG(temperature) AS avg_temperature
 FROM tb_sensor_data
 WHERE colletctiontime >= '2021-06-01 08:00:00'
   AND colletctiontime <= '2021-07-10 08:02:00';
+```  
 
 -- Detectar tendências (valores anômalos): Identificar temperaturas acima de 25°C.
-
+```sql
 SELECT time, temperature
 FROM sensor_data
 WHERE temperature > 25.0;
+```
 
 -- Agregação contínua (usando uma continuous aggregate): Calcule a temperatura média por hora.
-
+```sql
 CREATE MATERIALIZED VIEW hourly_avg_temperature
 WITH (timescaledb.continuous) AS
 SELECT sc_timescaledb.time_bucket('1 hour', colletctiontime) AS hour,
        AVG(temperature) AS avg_temperature
 FROM tb_sensor_data_hyper
 GROUP BY hour;
+```
 
-
-SELECT sc_timescaledb.show_chunks('tb_sensor_data_hyper', older_than => INTERVAL '3 days');
+```sql
+SELECT sc_timescaledb.show_chunks(
+  'tb_sensor_data_hyper',
+  older_than => INTERVAL '3 days');
+```  
+```
                show_chunks               
 -----------------------------------------
  _timescaledb_internal._hyper_1_55_chunk
@@ -524,10 +528,10 @@ SELECT sc_timescaledb.show_chunks('tb_sensor_data_hyper', older_than => INTERVAL
  _timescaledb_internal._hyper_1_71_chunk
  _timescaledb_internal._hyper_1_72_chunk
 (18 rows)
-
+```
 
 -- Agora, você pode consultar a visualização:
-
+```sql
 SELECT * FROM hourly_avg_temperature
 WHERE hour >= '2024-12-24 00:00:00';
 ```
