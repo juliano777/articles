@@ -170,7 +170,7 @@ systemctl restart postgresql@${PGMAJOR}-main.service
 
 ## TimescaleDB practice (SQL commands)
 
-Creating the test database and then accessing it:
+Creating the test database and then accessing it (as `postgres` user):
 ```bash
 # Database creation
 createdb db_timescale
@@ -219,7 +219,8 @@ Transform the table into a hypertable: TimescaleDB uses the concept of
 hypertables, which automatically partition data by time
 */
 SELECT
-  sc_timescaledb.create_hypertable('tb_sensor_data_hyper', 'colletctiontime');
+  sc_timescaledb.create_hypertable(
+    'tb_sensor_data_hyper', 'colletctiontime');
 ```
 ```
          create_hypertable         
@@ -245,6 +246,40 @@ Triggers:
 Notice that there is a index that was created after the transformation into
 hypertable.
 
+Lets check the ordinary table structure:
+```
+\d tb_sensor_data
+                        Table "public.tb_sensor_data"
+     Column      |           Type           | Collation | Nullable | Default 
+-----------------+--------------------------+-----------+----------+---------
+ colletctiontime | timestamp with time zone |           | not null | 
+ sensor_id       | integer                  |           | not null | 
+ temperature     | numeric(3,1)             |           |          | 
+ humidity        | numeric(3,1)             |           |          | 
+```
+There is no indexes.
+
+Index creation:
+```sql
+CREATE INDEX tb_sensor_data_colletctiontime_idx
+  ON tb_sensor_data USING btree (colletctiontime DESC);
+```
+
+Lets check again the ordinary table structure:
+```
+\d tb_sensor_data
+                        Table "public.tb_sensor_data"
+     Column      |           Type           | Collation | Nullable | Default 
+-----------------+--------------------------+-----------+----------+---------
+ colletctiontime | timestamp with time zone |           | not null | 
+ sensor_id       | integer                  |           | not null | 
+ temperature     | numeric(3,1)             |           |          | 
+ humidity        | numeric(3,1)             |           |          | 
+Indexes:
+    "tb_sensor_data_colletctiontime_idx" btree (colletctiontime DESC)
+```
+
+Now the ordinary table has the same index as the hypertable.
 
 Creating the auxiliary functions:
 ```sql
@@ -293,7 +328,7 @@ LANGUAGE plpgsql;
 
 Creating the dummy data in unlogged table:
 ```sql
--- 50 million records
+-- 100 million records
 INSERT INTO ut_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT
   ('2021-05-31 00:00:00'::timestamp + 
@@ -301,7 +336,7 @@ SELECT
   fc_randint(1, 10),  -- sensor_id
   fc_randfloat(20, 30),  -- temperature
   fc_randfloat(40, 70) -- humidity
-FROM generate_series(1, 50000000) as n;
+FROM generate_series(1, 100000000) as n;
 ```
 
 Ingesting the data on tables (from unlogged table):
@@ -314,11 +349,16 @@ INSERT INTO tb_sensor_data_hyper (colletctiontime, sensor_id, temperature, humid
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
 
+-- Time: 589139.087 ms (09:49.139)
+
 -- Inserting data into the normal table
 INSERT INTO tb_sensor_data (colletctiontime, sensor_id, temperature, humidity)
 SELECT  colletctiontime, sensor_id, temperature, humidity
 FROM ut_sensor_data;
+-- Time: 684402.479 ms (11:24.402)
 ```
+
+
 
 Lets check the hypertable structure again:
 ```
@@ -339,7 +379,12 @@ Number of child tables: 84 (Use \d+ to list them.)
 Notice that now there are child tables.\
 It was due to automatic partitioning.
 
-<!-- select pg_size_pretty(sum(pg_relation_size(inhrelid::regclass))) from pg_inherits where inhparent='tb_sensor_data_hyper'::regclass; -->
+<!-- 
+SELECT
+  pg_size_pretty(sum(pg_relation_size(inhrelid::regclass)))
+FROM pg_inherits
+WHERE inhparent = 'tb_sensor_data_hyper'::regclass;
+-->
 
 
 -- Obter todas as leituras de um intervalo de tempo:
