@@ -386,19 +386,28 @@ FROM pg_inherits
 WHERE inhparent = 'tb_sensor_data_hyper'::regclass;
 -->
 
+```sql
 SELECT min(colletctiontime) FROM tb_sensor_data_hyper;
+```
+```
           min           
 ------------------------
  2021-05-31 00:00:01+00
+``` 
 
-
+```sql
 SELECT max(colletctiontime) FROM tb_sensor_data_hyper;
+```
+```
           max           
 ------------------------
  2024-07-31 09:46:40+00
+``` 
 
-
+```sql
 TABLE tb_sensor_data_hyper LIMIT 10;
+```
+```
     colletctiontime     | sensor_id | temperature | humidity 
 ------------------------+-----------+-------------+----------
  2021-05-31 00:00:01+00 |         3 |        27.2 |     49.6
@@ -411,9 +420,7 @@ TABLE tb_sensor_data_hyper LIMIT 10;
  2021-05-31 00:00:08+00 |         4 |        21.8 |     60.2
  2021-05-31 00:00:09+00 |         6 |        28.6 |     64.5
  2021-05-31 00:00:10+00 |         9 |        26.1 |     41.5
-
-
-
+```
 
 -- Obter a contagem de todas as leituras de um intervalo de tempo:
 
