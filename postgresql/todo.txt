@@ -1,0 +1,4 @@
+pg_test_fsync
+pg_prewarm
+pgbench-tools, BenchmarkSQL, HammerDB
+default database roles
